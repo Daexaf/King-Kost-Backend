@@ -1,4 +1,4 @@
 package com.enigma.kingkost.services;
 
-public class example {
+public interface AdminService {
 }
