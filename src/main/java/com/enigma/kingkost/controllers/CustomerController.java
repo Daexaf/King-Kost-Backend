@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "localhost:5173")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(AppPath.CUSTOMER)
@@ -36,7 +37,7 @@ public class CustomerController {
     }
 
     @PutMapping("/v1")
-    public CustomerResponse updateCustomer(CustomerRequest customerRequest) {
+    public CustomerResponse updateCustomer(@RequestBody CustomerRequest customerRequest) {
         return customerService.update(customerRequest);
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +18,6 @@ public class GenderServiceImpl implements GenderService {
     @Override
     public GenderType getOrSave(GenderType gender) {
         Optional<GenderType> optionalGender = genderRepository.findById(gender.getId());
-
         if (!optionalGender.isEmpty()) {
             return optionalGender.get();
         }

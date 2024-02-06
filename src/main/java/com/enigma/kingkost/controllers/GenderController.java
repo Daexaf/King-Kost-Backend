@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "localhost:5173")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(AppPath.GENDER)
@@ -15,17 +16,17 @@ public class GenderController {
 
     private final GenderService genderService;
 
-    @GetMapping(path = "/gender")
+    @GetMapping(path = "/v1")
     List<GenderType> getGender() {
         return genderService.getAll();
     }
 
-    @GetMapping(path = "/gender/{id}")
+    @GetMapping(path = "/v1/{id}")
     GenderType getGenderById(@PathVariable String id) {
         return genderService.getById(id);
     }
 
-    @PostMapping(path = "/create")
+    @PostMapping(path = "/v1")
     GenderType addGender(@RequestBody GenderType gender) {
         return genderService.createGender(gender);
     }

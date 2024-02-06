@@ -1,15 +1,15 @@
 package com.enigma.kingkost.controllers;
 
 import com.enigma.kingkost.constant.AppPath;
+import com.enigma.kingkost.dto.request.AdminRequest;
 import com.enigma.kingkost.dto.request.RegisterRequest;
+import com.enigma.kingkost.dto.response.AdminResponse;
 import com.enigma.kingkost.dto.response.RegisterResponse;
 import com.enigma.kingkost.services.RegisterService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "localhost:5173")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(AppPath.AUTH)
@@ -24,5 +24,10 @@ public class RegisterController {
     @PostMapping("/register/customer")
     public RegisterResponse registerCustomer(@RequestBody RegisterRequest registerRequest) {
         return registerService.registerCustomer(registerRequest);
+    }
+
+    @PostMapping("/register/admin")
+    public AdminResponse registerAdmin(@RequestBody AdminRequest adminRequest) {
+        return registerService.registerAdmin(adminRequest);
     }
 }

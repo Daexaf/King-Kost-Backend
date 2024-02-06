@@ -1,9 +1,11 @@
 package com.enigma.kingkost.services.impl;
 
 import com.enigma.kingkost.constant.ERole;
+import com.enigma.kingkost.dto.request.AdminRequest;
 import com.enigma.kingkost.dto.request.CustomerRequest;
 import com.enigma.kingkost.dto.request.RegisterRequest;
 import com.enigma.kingkost.dto.request.SellerRequest;
+import com.enigma.kingkost.dto.response.AdminResponse;
 import com.enigma.kingkost.dto.response.RegisterResponse;
 import com.enigma.kingkost.entities.GenderType;
 import com.enigma.kingkost.entities.RoleType;
@@ -29,6 +31,7 @@ public class RegisterServiceImpl implements RegisterService {
     private final ValidationUtil validationUtil;
     private final SellerService sellerService;
     private final GenderService genderService;
+    private final AdminService adminService;
 
     @Transactional(rollbackOn = Exception.class)
     @Override
@@ -115,6 +118,48 @@ public class RegisterServiceImpl implements RegisterService {
 
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Customer already exist");
+        }
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    @Override
+    public AdminResponse registerAdmin(AdminRequest request) {
+        try {
+            validationUtil.validate(request);
+            System.out.println("Received Username: " + request.getUsername());
+
+            if (request.getUsername() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username cannot be null");
+            }
+
+            RoleType role = RoleType.builder()
+                    .name(ERole.ROLE_ADMIN)
+                    .build();
+            RoleType roleSaved = roleService.getOrSave(role);
+
+            UserCredential userCredential = UserCredential.builder()
+                    .username(request.getUsername())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .roleTypeId(roleSaved)
+                    .build();
+            userCredentialRepository.saveAndFlush(userCredential);
+
+            AdminRequest admin = AdminRequest.builder()
+                    .id(userCredential.getId())
+                    .username(userCredential.getUsername())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .roleTypeId(userCredential.getRoleTypeId().getId())
+                    .build();
+            adminService.createAdmin(admin);
+
+            return AdminResponse.builder()
+                    .id(admin.getId())
+                    .username(userCredential.getUsername())
+                    .roleTypeId(roleSaved.getId())
+                    .build();
+
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Admin already exists");
         }
     }
 }

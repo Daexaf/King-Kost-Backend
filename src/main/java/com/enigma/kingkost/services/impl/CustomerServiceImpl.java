@@ -40,7 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse update(CustomerRequest customerRequest) {
         Customer currentCustomerId = customerRepository.findById(customerRequest.getId()).orElse(null);
         if (currentCustomerId != null) {
-            GenderType gender = genderService.getById(customerRequest.getGenderTypeId().getId()); // Ambil ID gender yang sesuai
+            GenderType gender = genderService.getById(customerRequest.getGenderTypeId().getId());
             Customer customer = Customer.builder()
                     .id(customerRequest.getId())
                     .fullName(customerRequest.getFullName())
@@ -74,7 +74,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private CustomerResponse getCustomerResponse(Customer customer) {
-
         GenderType gender =  customer.getGenderTypeId();
         return CustomerResponse.builder()
                 .id(customer.getId())
