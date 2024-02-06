@@ -16,7 +16,7 @@ public class City {
     private String id;
     @Column(nullable = false, length = 120)
     private String name;
-    @Column(nullable = false, name = "created_at")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
@@ -24,3 +24,5 @@ public class City {
     @JoinColumn(name = "province_id")
     private Province province;
 }
+
+

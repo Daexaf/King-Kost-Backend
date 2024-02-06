@@ -2,6 +2,7 @@ package com.enigma.kingkost.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,7 +17,7 @@ public class Subdistrict {
     private String id;
     @Column(nullable = false, length = 120)
     private String name;
-    @Column(nullable = false, name = "created_at")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
