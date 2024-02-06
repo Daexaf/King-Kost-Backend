@@ -8,4 +8,9 @@ public class AppPath {
     public final static String PAYMENT = "/payment";
     public final static String MONTH = "/month";
     public final static String ADMIN = "/admin";
+    public final static String VALUE_PROVINCE = "/province";
+    public final static String VALUE_CITY = "/city";
+    public final static String VALUE_SUBDISTRICT = "/subdistrict";
+
+
 }
