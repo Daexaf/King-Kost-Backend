@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(AppPath.CUSTOMER)
 public class CustomerController {
     private final CustomerService customerService;
 
-    @PostMapping("/v1")
-    public CustomerResponse createCust(CustomerRequest customerRequest) {
-        return customerService.createCustomer(customerRequest);
-    }
+//    @PostMapping("/v1")
+//    public CustomerResponse createCust(Cus customerRequest) {
+//        return customerService.createCustomer(customerRequest);
+//    }
 
     @GetMapping("/v1")
     public List<CustomerResponse> getAll() {

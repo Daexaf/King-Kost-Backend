@@ -7,6 +7,7 @@ import com.enigma.kingkost.dto.request.RegisterRequest;
 import com.enigma.kingkost.dto.request.SellerRequest;
 import com.enigma.kingkost.dto.response.AdminResponse;
 import com.enigma.kingkost.dto.response.RegisterResponse;
+import com.enigma.kingkost.entities.Customer;
 import com.enigma.kingkost.entities.GenderType;
 import com.enigma.kingkost.entities.RoleType;
 import com.enigma.kingkost.entities.UserCredential;
@@ -19,7 +20,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +39,7 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Transactional(rollbackOn = Exception.class)
     @Override
-    public RegisterResponse registerCustomer(RegisterRequest request) {
+    public RegisterResponse registerCustomer(RegisterRequest request, MultipartFile profileImage) {
         try {
             validationUtil.validate(request);
             System.out.println("Received Username: " + request.getFullName());
@@ -58,14 +62,20 @@ public class RegisterServiceImpl implements RegisterService {
                     .build();
             userCredentialRepository.saveAndFlush(userCredential);
 
-            CustomerRequest customer = CustomerRequest.builder()
+            Customer customer = Customer.builder()
                     .fullName(request.getFullName())
                     .email(request.getEmail())
                     .address(request.getAddress())
-                    .userCredentialId(userCredential.getId())
                     .genderTypeId(gender)
                     .phoneNumber(request.getPhoneNumber())
+                    .userCredential(userCredential)
                     .build();
+
+            if (profileImage != null) {
+                customer.setProfileImageName(profileImage.getOriginalFilename());
+                customer.setProfileImageType(profileImage.getContentType());
+                customer.setProfileImageData(profileImage.getBytes());
+            }
             customerService.createCustomer(customer);
             return RegisterResponse.builder()
                     .username(userCredential.getUsername())
@@ -74,6 +84,8 @@ public class RegisterServiceImpl implements RegisterService {
 
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Customer already exist");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -110,6 +122,11 @@ public class RegisterServiceImpl implements RegisterService {
                     .phoneNumber(request.getPhoneNumber())
                     .userCredentialId(userCredential.getId())
                     .build();
+//            if (profileImage != null) {
+//                customer.setProfileImageName(profileImage.getOriginalFilename());
+//                customer.setProfileImageType(profileImage.getContentType());
+//                customer.setProfileImageData(profileImage.getBytes());
+//            }
             sellerService.createSeller(seller);
             return RegisterResponse.builder()
                     .username(userCredential.getUsername())

@@ -18,7 +18,7 @@ public class CustomerRequest {
     @NotBlank(message = "Email is required")
     private String email;
     @NotBlank(message = "Gender is required")
-    private GenderType genderTypeId;
+    private String genderTypeId;
     @NotBlank(message = "Phone Number is required")
     private String phoneNumber;
     @NotBlank(message = "Address is required")
@@ -27,5 +27,4 @@ public class CustomerRequest {
     private String username;
     @NotBlank(message = "password is required")
     private String password;
-    private String userCredentialId;
 }

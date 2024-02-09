@@ -8,8 +8,9 @@ import com.enigma.kingkost.dto.response.RegisterResponse;
 import com.enigma.kingkost.services.RegisterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-@CrossOrigin(origins = "localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(AppPath.AUTH)
@@ -22,8 +23,8 @@ public class RegisterController {
     }
 
     @PostMapping("/register/customer")
-    public RegisterResponse registerCustomer(@RequestBody RegisterRequest registerRequest) {
-        return registerService.registerCustomer(registerRequest);
+    public RegisterResponse registerCustomer(@RequestBody RegisterRequest registerRequest, @RequestParam("profileImage")MultipartFile profileImage) {
+        return registerService.registerCustomer(registerRequest, profileImage);
     }
 
     @PostMapping("/register/admin")
