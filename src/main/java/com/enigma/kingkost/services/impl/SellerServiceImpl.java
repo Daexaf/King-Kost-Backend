@@ -1,15 +1,20 @@
 package com.enigma.kingkost.services.impl;
 
 import com.enigma.kingkost.dto.request.SellerRequest;
+import com.enigma.kingkost.dto.response.CustomerResponse;
 import com.enigma.kingkost.dto.response.SellerResponse;
-import com.enigma.kingkost.entities.GenderType;
-import com.enigma.kingkost.entities.Seller;
+import com.enigma.kingkost.entities.*;
 import com.enigma.kingkost.repositories.SellerRepository;
 import com.enigma.kingkost.services.GenderService;
+import com.enigma.kingkost.services.ImagesService;
 import com.enigma.kingkost.services.SellerService;
+import com.enigma.kingkost.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,39 +23,51 @@ import java.util.stream.Collectors;
 public class SellerServiceImpl implements SellerService {
     private final SellerRepository sellerRepository;
     private final GenderService genderService;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    private final ImagesService imagesService;
 
     @Override
-    public SellerResponse createSeller(SellerRequest sellerRequest) {
-        GenderType gender = sellerRequest.getGenderTypeId();
-        Seller seller = Seller.builder()
-                .id(sellerRequest.getId())
-                .fullName(sellerRequest.getFullName())
-                .email(sellerRequest.getEmail())
-                .phoneNumber(sellerRequest.getPhoneNumber())
-                .address(sellerRequest.getAddress())
-                .genderTypeId(gender)
-                .userCredentialId(sellerRequest.getUserCredentialId())
+    public SellerResponse createSeller(Seller sellerRequest) {
+        Seller seller = sellerRepository.save(sellerRequest);
+        SellerResponse sellerResponse = SellerResponse.builder()
+                .id(seller.getId())
+                .address(seller.getAddress())
+                .phoneNumber(seller.getPhoneNumber())
+                .email(seller.getEmail())
+                .fullName(seller.getFullName())
+                .genderTypeId(seller.getGenderTypeId())
                 .build();
-        sellerRepository.save(seller);
-        return getSellerResponse(seller);
+        return sellerResponse;
     }
 
     @Override
     public SellerResponse updateSeller(SellerRequest sellerRequest) {
         Seller currentSellerId = sellerRepository.findById(sellerRequest.getId()).orElse(null);
+
         if (currentSellerId != null) {
-            GenderType gender = genderService.getById(sellerRequest.getGenderTypeId().getId()); // Ambil ID gender yang sesuai
-            Seller seller = Seller.builder()
-                    .id(sellerRequest.getId())
-                    .fullName(sellerRequest.getFullName())
-                    .email(sellerRequest.getEmail())
-                    .phoneNumber(sellerRequest.getPhoneNumber())
-                    .address(sellerRequest.getAddress())
-                    .genderTypeId(gender)
-                    .build();
-            sellerRepository.save(seller);
-            return getSellerResponse(seller);
+            UserCredential userCredential = currentSellerId.getUserCredential();
+            if (userCredential == null) {
+                userCredential = new UserCredential();
+            }
+            userCredential.setUsername(sellerRequest.getUsername());
+            userCredential.setPassword(passwordEncoder.encode(sellerRequest.getPassword()));
+
+            userService.updateUserCredential(userCredential);
+
+            GenderType gender = genderService.getById(sellerRequest.getGenderTypeId());
+            currentSellerId.setFullName(sellerRequest.getFullName());
+            currentSellerId.setAddress(sellerRequest.getAddress());
+            currentSellerId.setEmail(sellerRequest.getEmail());
+            currentSellerId.setPhoneNumber(sellerRequest.getPhoneNumber());
+            currentSellerId.setGenderTypeId(gender);
+            currentSellerId.setUserCredential(userCredential);
+            currentSellerId.setActive(sellerRequest.isActive());
+            sellerRepository.save(currentSellerId);
+
+            return getSellerResponse(currentSellerId);
         }
+
         return null;
     }
 
@@ -73,15 +90,46 @@ public class SellerServiceImpl implements SellerService {
         return getSellerResponse(seller);
     }
 
+    @Override
+    public SellerResponse addOrUpdateProfileImageForSeller(String sellerId, MultipartFile profileImage) throws IOException {
+        Images images = imagesService.store(profileImage);
+        Seller seller = sellerRepository.findById(sellerId).orElse(null);
+
+        if(seller != null){
+            seller.setProfileImageName(images.getName());
+            seller.setProfileImageType(images.getType());
+            seller.setProfileImageData(images.getData());
+
+            Seller updatedSeller = sellerRepository.save(seller);
+
+            return convertToResponse(updatedSeller);
+        }
+
+        return null;
+    }
+
+    private SellerResponse convertToResponse(Seller seller) {
+        return SellerResponse.builder()
+                .id(seller.getId())
+                .fullName(seller.getFullName())
+                .email(seller.getEmail())
+                .genderTypeId(seller.getGenderTypeId())
+                .phoneNumber(seller.getPhoneNumber())
+                .address(seller.getAddress())
+                .profileImageName(seller.getProfileImageName())
+                .profileImageType(seller.getProfileImageType())
+                .profileImageData(seller.getProfileImageData())
+                .build();
+    }
+
     private SellerResponse getSellerResponse(Seller seller) {
-        GenderType gender =  seller.getGenderTypeId();
         return SellerResponse.builder()
                 .id(seller.getId())
                 .fullName(seller.getFullName())
                 .address(seller.getAddress())
                 .email(seller.getEmail())
                 .phoneNumber(seller.getPhoneNumber())
-                .genderTypeId(gender.getId())
+                .genderTypeId(seller.getGenderTypeId())
                 .build();
     }
 }

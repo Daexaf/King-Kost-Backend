@@ -1,5 +1,6 @@
 package com.enigma.kingkost.dto.response;
 
+import com.enigma.kingkost.entities.GenderType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +14,11 @@ public class SellerResponse {
     private String id;
     private String fullName;
     private String email;
-    private String genderTypeId;
+    private GenderType genderTypeId;
     private String phoneNumber;
     private String address;
 
+    private String profileImageName;
+    private String profileImageType;
+    private byte[] profileImageData;
 }

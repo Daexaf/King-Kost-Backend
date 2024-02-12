@@ -23,7 +23,13 @@ public class Customer {
     private GenderType genderTypeId;
     private String phoneNumber;
     private String address;
-    private String userCredentialId;
+    @OneToOne
+    @JoinColumn(name = "user_credential_id")
+    private UserCredential userCredential;
+    private String profileImageName;
+    private String profileImageType;
+    @Lob
+    private byte[] profileImageData;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
