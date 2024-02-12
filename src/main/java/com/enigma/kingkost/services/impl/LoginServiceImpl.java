@@ -31,7 +31,7 @@ public class LoginServiceImpl implements LoginService {
             if (username != null) {
                 username = username.toLowerCase();
             } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username cannot be null");
+                throw new NullPointerException("Username cannot be null");
             }
 
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(

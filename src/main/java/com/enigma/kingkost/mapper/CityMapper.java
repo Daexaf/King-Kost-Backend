@@ -16,4 +16,12 @@ public class CityMapper {
              .build()));
      return listCityResponse;
     }
+
+    public static CityResponse cityToCityResponse(City city) {
+        return CityResponse.builder()
+                .id(city.getId())
+                .name(city.getName())
+                .province(city.getProvince())
+                .build();
+    }
 }

@@ -39,10 +39,8 @@ public class AdminServiceImpl implements AdminService {
             LocalDateTime createdAt = currentAdmin.getCreatedAt();
             currentAdmin.setUsername(adminRequest.getUsername());
             if (!passwordEncoder.matches(adminRequest.getPassword(), currentAdmin.getPassword())) {
-                // Jika belum terenkripsi, enkripsi password
                 currentAdmin.setPassword(passwordEncoder.encode(adminRequest.getPassword()));
             } else {
-                // Jika sudah terenkripsi, gunakan password yang sudah ada
                 currentAdmin.setPassword(adminRequest.getPassword());
             }
 

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = AppPath.URL_CROSS)
 @RestController
 @RequestMapping(AppPath.VALUE_PROVINCE)
 @RequiredArgsConstructor

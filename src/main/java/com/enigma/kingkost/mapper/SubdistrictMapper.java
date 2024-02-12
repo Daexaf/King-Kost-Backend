@@ -18,4 +18,11 @@ public class SubdistrictMapper {
         }));
         return subdistrictResponseList;
     }
+    public static SubdistrictResponse subdistrictToSubdistrictResponse(Subdistrict subdistrict) {
+        return SubdistrictResponse.builder()
+                .id(subdistrict.getId())
+                .name(subdistrict.getName())
+                .city(subdistrict.getCity())
+                .build();
+    }
 }

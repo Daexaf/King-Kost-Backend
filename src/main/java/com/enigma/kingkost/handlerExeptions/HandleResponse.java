@@ -16,6 +16,19 @@ import java.util.Map;
 @RestControllerAdvice()
 public class HandleResponse {
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
+    }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
     public HandleExeptionResponse handleNotFoundExeption(NotFoundException notFoundException) {
@@ -42,20 +55,4 @@ public class HandleResponse {
                 .message(nullPointerException.getMessage())
                 .build();
     }
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public HandleExeptionResponse handleValidationException(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-
-        return HandleExeptionResponse.builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .message("Validation error")
-                .build();
-    }
-
 }

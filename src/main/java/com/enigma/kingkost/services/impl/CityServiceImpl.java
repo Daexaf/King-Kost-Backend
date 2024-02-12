@@ -74,4 +74,13 @@ public class CityServiceImpl implements CityService {
         }
         return CityMapper.listCityToListCityResponse(cities);
     }
+
+    @Override
+    public City getCityById(String id) {
+        City city = cityRepository.findById(id).orElse(null);
+        if (city == null) {
+            throw new NotFoundException("City not found");
+        }
+        return city;
+    }
 }
