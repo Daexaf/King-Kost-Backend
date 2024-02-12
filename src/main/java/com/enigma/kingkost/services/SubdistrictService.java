@@ -11,4 +11,5 @@ public interface SubdistrictService {
     List<SubdistrictResponse> getByCityId(String id);
 
     List<SubdistrictResponse> getAll();
+    Subdistrict getSubdistrictById(String id);
 }

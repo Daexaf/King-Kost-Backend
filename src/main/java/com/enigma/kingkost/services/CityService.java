@@ -11,4 +11,5 @@ public interface CityService {
     List<CityResponse> getAllCity();
 
     List<CityResponse> getByProvinceId(String id);
+    City getCityById(String id);
 }
