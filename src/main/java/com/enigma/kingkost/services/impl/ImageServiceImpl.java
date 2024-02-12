@@ -1,6 +1,9 @@
 package com.enigma.kingkost.services.impl;
 
+import com.enigma.kingkost.dto.response.ImageResponse;
 import com.enigma.kingkost.entities.Image;
+import com.enigma.kingkost.entities.Kost;
+import com.enigma.kingkost.mapper.ImageMapper;
 import com.enigma.kingkost.repositories.ImageRepository;
 import com.enigma.kingkost.services.ImageService;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +24,17 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<Image> getImageByKostId(String kostId) {
+    public List<ImageResponse> getImageByKostId(String kostId) {
         List<Image> imageList = imageRepository.findByKost_IdAndIsActiveTrue(kostId);
         if (imageList == null) {
             throw new NotFoundException("Image kost with kost id " + kostId + " not found");
         }
-        return imageList;
+        return ImageMapper.listImageToListImageResponse(imageList);
     }
 
     @Override
-    public List<Image> updateImage(Image image) {
-        List<Image> imageList = getImageByKostId(image.getKost().getId());
+    public List<ImageResponse> updateImage(Image image) {
+        List<Image> imageList = getByKostId(image.getKost().getId());
         imageList.forEach((prevImage -> {
             if (!image.getFileName().equals(prevImage.getFileName())) {
                 save(image);
@@ -54,14 +57,34 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void deleteImage(Image image) {
-        save(save(Image.builder()
-                .id(image.getId())
-                .fileName(image.getFileName())
-                .kost(image.getKost())
+    public void deleteImage(ImageResponse imageResponse, Kost kost) {
+        Image image = getImageById(imageResponse.getId());
+        Image prevImage = Image.builder()
+                .id(imageResponse.getId())
+                .fileName(imageResponse.getFileName())
+                .kost(kost)
                 .isActive(false)
                 .createdAt(image.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
-                .build()));
+                .build();
+        save(prevImage);
+    }
+
+    @Override
+    public List<Image> getByKostId(String id) {
+        List<Image> images = imageRepository.findByKost_IdAndIsActiveTrue(id);
+        if (images == null) {
+            throw new NotFoundException("Image with kost id " + id + " not found");
+        }
+        return images;
+    }
+
+    @Override
+    public Image getImageById(String id) {
+        Image image = imageRepository.findById(id).orElse(null);
+        if (image == null) {
+            throw new NotFoundException("Image with id " + id + "not found");
+        }
+        return image;
     }
 }

@@ -1,18 +1,29 @@
 package com.enigma.kingkost.services.impl;
 
+import com.enigma.kingkost.dto.request.GetAllRequest;
 import com.enigma.kingkost.dto.request.KostRequest;
+import com.enigma.kingkost.dto.request.UpdateImageKostRequest;
 import com.enigma.kingkost.dto.request.UpdateKostRequest;
+import com.enigma.kingkost.dto.response.ImageResponse;
 import com.enigma.kingkost.dto.response.KostResponse;
 import com.enigma.kingkost.dto.response.SellerResponse;
 import com.enigma.kingkost.dto.rest.city.CityResponse;
 import com.enigma.kingkost.dto.rest.province.ProvinceResponse;
 import com.enigma.kingkost.dto.rest.subdistrict.SubdistrictResponse;
 import com.enigma.kingkost.entities.*;
+import com.enigma.kingkost.mapper.*;
 import com.enigma.kingkost.repositories.KostRepository;
 import com.enigma.kingkost.services.*;
 import com.enigma.kingkost.services.FileStorageService;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.webjars.NotFoundException;
@@ -21,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -96,6 +108,7 @@ public class KostServiceImpl implements KostService {
                         .build())
                 .city(findCity)
                 .subdistrict(findSubdistrict)
+                .isActive(true)
                 .build());
 
         KostPrice kostPrice = kostPriceService.save(KostPrice.builder()
@@ -143,14 +156,82 @@ public class KostServiceImpl implements KostService {
                         .build())
                 .seller(findSeller)
                 .createdAt(saveKost.getCreatedAt())
-                .images(listImageSave)
+                .images(ImageMapper.listImageToListImageResponse(listImageSave))
                 .kostPrice(kostPrice)
                 .build();
     }
 
     @Override
-    public List<KostResponse> getAll() {
-        return null;
+    public Page<KostResponse> getAll(GetAllRequest getAllRequest) {
+        Specification<Kost> specification = ((root, query, criteriaBuilder) -> {
+            Join<Kost, KostPrice> kostPriceJoin = root.join("kostPrices");
+            Join<Kost, Province> kostProvinceJoin = root.join("province");
+            Join<Kost, City> kostCityJoin = root.join("city");
+            Join<Kost, Subdistrict> kostSubdistrictJoin = root.join("subdistrict");
+            Join<Kost, GenderType> kostGenderTypeJoin = root.join("genderType");
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (getAllRequest.getName() != null) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), '%' + getAllRequest.getName().toLowerCase() + '%'));
+            }
+            if (getAllRequest.getMaxPrice() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(kostPriceJoin.get("price"), getAllRequest.getMaxPrice()));
+            }
+            if (getAllRequest.getProvince_id() != null) {
+                predicates.add(criteriaBuilder.equal(kostProvinceJoin.get("id"), getAllRequest.getProvince_id()));
+            }
+            if (getAllRequest.getCity_id() != null) {
+                predicates.add(criteriaBuilder.equal(kostCityJoin.get("id"), getAllRequest.getCity_id()));
+            }
+            if (getAllRequest.getSubdistrict_id() != null) {
+                predicates.add(criteriaBuilder.equal(kostSubdistrictJoin.get("id"), getAllRequest.getSubdistrict_id()));
+            }
+            if (getAllRequest.getGender_type_id() != null) {
+                predicates.add(criteriaBuilder.equal(kostGenderTypeJoin.get("id"), getAllRequest.getGender_type_id()));
+            }
+            return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+        });
+
+        Pageable pageable = PageRequest.of(getAllRequest.getPage(), getAllRequest.getSize());
+        Page<Kost> kosts = kostRepository.findAll(specification, pageable);
+        List<KostResponse> kostResponses = new ArrayList<>();
+
+        for (Kost kost : kosts.getContent()) {
+            if (kost.getIsActive().equals(true)) {
+                Optional<KostPrice> kostPrice = kost.getKostPrices().stream().filter(KostPrice::getIsActive).findFirst();
+                if (kostPrice.isEmpty()) {
+                    continue;
+                }
+
+                List<ImageResponse> imageList = imageService.getImageByKostId(kost.getId());
+                kostResponses.add(KostResponse.builder()
+                        .id(kost.getId())
+                        .name(kost.getName())
+                        .description(kost.getDescription())
+                        .kostPrice(kostPrice.get())
+                        .availableRoom(kost.getAvailableRoom())
+                        .isWifi(kost.getIsWifi())
+                        .isAc(kost.getIsAc())
+                        .isParking(kost.getIsParking())
+                        .genderType(kost.getGenderType())
+                        .seller(SellerResponse.builder()
+                                .id(kost.getSeller().getId())
+                                .fullName(kost.getSeller().getFullName())
+                                .address(kost.getSeller().getAddress())
+                                .email(kost.getSeller().getEmail())
+                                .phoneNumber(kost.getSeller().getPhoneNumber())
+                                .genderTypeId(kost.getSeller().getGenderTypeId().getName().name())
+                                .build())
+                        .images(imageList)
+                        .province(ProvinceMapper.provinceToProvinceResponse(kost.getProvince()))
+                        .city(CityMapper.cityToCityResponse(kost.getCity()))
+                        .subdistrict(SubdistrictMapper.subdistrictToSubdistrictResponse(kost.getSubdistrict()))
+                        .build());
+            }
+
+        }
+        return new PageImpl<>(kostResponses, pageable, kosts.getTotalElements());
     }
 
     @Override
@@ -170,15 +251,9 @@ public class KostServiceImpl implements KostService {
         KostPrice kostPrice = kostPriceService.getByKostId(findKost.getId());
         GenderType genderTypeSeller = genderService.getById(sellerResponse.getGenderTypeId());
         GenderType genderTypeKost = genderService.getById(kostRequest.getGenderId());
-        ProvinceResponse provinceResponse = provinceService.getProvinceById(kostRequest.getId());
-        CityResponse cityResponses = (CityResponse) cityService.getByProvinceId(provinceResponse.getId()).stream().filter(cityResponse -> cityResponse.getId().equals(kostRequest.getCityId()));
-        if (cityResponses == null) {
-            throw new NullPointerException("City response its null");
-        }
-        SubdistrictResponse subdistrictResponses = (SubdistrictResponse) subdistrictService.getByCityId(kostRequest.getCityId()).stream().filter(subdistrictResponse -> subdistrictResponse.getId().equals(kostRequest.getSubdistrictId()));
-        if (subdistrictResponses == null) {
-            throw new NullPointerException("Sub district with id " + kostRequest.getSubdistrictId() + " is null");
-        }
+        ProvinceResponse provinceResponse = provinceService.getProvinceById(kostRequest.getProvinceId());
+        City city = cityService.getCityById(kostRequest.getCityId());
+        Subdistrict subdistrict = subdistrictService.getSubdistrictById(kostRequest.getSubdistrictId());
         Kost saveKost = kostRepository.save(Kost.builder()
                 .id(kostRequest.getId())
                 .name(kostRequest.getName())
@@ -202,15 +277,16 @@ public class KostServiceImpl implements KostService {
                         .createdAt(provinceResponse.getCreatedAt())
                         .build())
                 .city(City.builder()
-                        .id(cityResponses.getId())
-                        .name(cityResponses.getName())
-                        .province(cityResponses.getProvince())
+                        .id(city.getId())
+                        .name(city.getName())
+                        .province(city.getProvince())
                         .build())
                 .subdistrict(Subdistrict.builder()
-                        .id(subdistrictResponses.getId())
-                        .name(subdistrictResponses.getName())
+                        .id(subdistrict.getId())
+                        .name(subdistrict.getName())
                         .city(City.builder()
-                                .id(subdistrictResponses.getId())
+                                .id(city.getId())
+                                .name(city.getName())
                                 .province(Province.builder()
                                         .id(provinceResponse.getId())
                                         .name(provinceResponse.getName())
@@ -218,7 +294,8 @@ public class KostServiceImpl implements KostService {
                                         .build())
                                 .build())
                         .build())
-                .createdAt(kostRequest.getCreatedAt())
+                .isActive(findKost.getIsActive())
+                .createdAt(findKost.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
                 .build());
 
@@ -254,15 +331,16 @@ public class KostServiceImpl implements KostService {
                                     .createdAt(provinceResponse.getCreatedAt())
                                     .build())
                             .city(City.builder()
-                                    .id(cityResponses.getId())
-                                    .name(cityResponses.getName())
-                                    .province(cityResponses.getProvince())
+                                    .id(city.getId())
+                                    .name(city.getName())
+                                    .province(city.getProvince())
                                     .build())
                             .subdistrict(Subdistrict.builder()
-                                    .id(subdistrictResponses.getId())
-                                    .name(subdistrictResponses.getName())
+                                    .id(subdistrict.getId())
+                                    .name(subdistrict.getName())
                                     .city(City.builder()
-                                            .id(subdistrictResponses.getId())
+                                            .id(city.getId())
+                                            .name(city.getName())
                                             .province(Province.builder()
                                                     .id(provinceResponse.getId())
                                                     .name(provinceResponse.getName())
@@ -274,24 +352,13 @@ public class KostServiceImpl implements KostService {
                     .createdAt(LocalDateTime.now())
                     .build());
         }
-
-        for (Image prevImage : kostRequest.getListImage()) {
+        for (ImageResponse prevImage : kostRequest.getListImage()) {
             if (prevImage.getIsActive().equals(false)) {
-                imageService.deleteImage(prevImage);
+                imageService.deleteImage(prevImage, findKost);
             }
         }
 
-        for (MultipartFile fileImage: kostRequest.getFileImages()) {
-          String imageNameAfterStore = fileStorageService.storageFile(fileImage);
-          imageService.save(Image.builder()
-                          .fileName(imageNameAfterStore)
-                          .isActive(true)
-                          .kost(saveKost)
-                          .createdAt(LocalDateTime.now())
-                  .build());
-        }
-
-        List<Image> images = imageService.getImageByKostId(saveKost.getId());
+        List<ImageResponse> images = imageService.getImageByKostId(saveKost.getId());
         return KostResponse.builder()
                 .id(saveKost.getId())
                 .name(saveKost.getName())
@@ -304,8 +371,8 @@ public class KostServiceImpl implements KostService {
                 .genderType(genderTypeKost)
                 .seller(sellerResponse)
                 .province(provinceResponse)
-                .city(cityResponses)
-                .subdistrict(subdistrictResponses)
+                .city(CityMapper.cityToCityResponse(city))
+                .subdistrict(SubdistrictMapper.subdistrictToSubdistrictResponse(subdistrict))
                 .images(images)
                 .createdAt(saveKost.getCreatedAt())
                 .updatedAt(saveKost.getUpdatedAt())
@@ -314,6 +381,75 @@ public class KostServiceImpl implements KostService {
 
     @Override
     public void deleteKost(String id) {
+        Kost kost = getById(id);
+        kostRepository.save(Kost.builder()
+                .id(kost.getId())
+                .name(kost.getName())
+                .description(kost.getDescription())
+                .availableRoom(kost.getAvailableRoom())
+                .seller(Seller.builder()
+                        .id(kost.getSeller().getId())
+                        .fullName(kost.getSeller().getFullName())
+                        .email(kost.getSeller().getEmail())
+                        .address(kost.getSeller().getAddress())
+                        .phoneNumber(kost.getSeller().getPhoneNumber())
+                        .genderTypeId(kost.getSeller().getGenderTypeId())
+                        .build())
+                .isParking(kost.getIsParking())
+                .isWifi(kost.getIsWifi())
+                .isAc(kost.getIsAc())
+                .genderType(kost.getGenderType())
+                .province(Province.builder()
+                        .id(kost.getProvince().getId())
+                        .name(kost.getProvince().getName())
+                        .createdAt(kost.getProvince().getCreatedAt())
+                        .build())
+                .city(City.builder()
+                        .id(kost.getCity().getId())
+                        .name(kost.getCity().getName())
+                        .province(kost.getCity().getProvince())
+                        .build())
+                .subdistrict(Subdistrict.builder()
+                        .id(kost.getSubdistrict().getId())
+                        .name(kost.getSubdistrict().getName())
+                        .city(City.builder()
+                                .id(kost.getSubdistrict().getId())
+                                .province(Province.builder()
+                                        .id(kost.getProvince().getId())
+                                        .name(kost.getProvince().getName())
+                                        .createdAt(kost.getProvince().getCreatedAt())
+                                        .build())
+                                .build())
+                        .build())
+                .isActive(false)
+                .createdAt(kost.getCreatedAt())
+                .updatedAt(LocalDateTime.now())
+                .build());
+    }
 
+    @Override
+    public KostResponse getByIdKost(String id) {
+        Kost kost = getById(id);
+        KostPrice kostPrice = kostPriceService.getByKostId(kost.getId());
+        List<Image> imageList = imageService.getByKostId(kost.getId());
+        return KostMapper.kostToKostResponse(kost, kostPrice, imageList);
+    }
+
+    @Override
+    public void updateImageKost(UpdateImageKostRequest updateImageKostRequest) {
+        Kost kost = getById(updateImageKostRequest.getKost_id());
+        String fileNameImage = null;
+        for (MultipartFile multipartFile : updateImageKostRequest.getFileImages()) {
+            fileNameImage = fileStorageService.storageFile(multipartFile);
+        }
+        if (fileNameImage == null) {
+            throw new NullPointerException("File image null");
+        }
+        imageService.save(Image.builder()
+                .fileName(fileNameImage)
+                .kost(kost)
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .build());
     }
 }

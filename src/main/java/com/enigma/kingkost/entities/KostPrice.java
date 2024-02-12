@@ -1,5 +1,6 @@
 package com.enigma.kingkost.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +21,7 @@ public class KostPrice {
     private Double price;
     @ManyToOne
     @JoinColumn(name = "kost_id")
+    @JsonBackReference
     private Kost kost;
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;

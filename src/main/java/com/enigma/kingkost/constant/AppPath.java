@@ -13,6 +13,9 @@ public class AppPath {
     public final static String VALUE_SUBDISTRICT = "/subdistrict";
     public final static String VALUE_KOST = "/kost";
     public final static String VALUE_GET_IMAGE = "/images/{imageName}";
+    public final static String VALUE_ID = "/{id}";
+    public final static String VALUE_IMAGE = "/image";
+    public final static String URL_CROSS = "localhost:5173";
 
 
 }

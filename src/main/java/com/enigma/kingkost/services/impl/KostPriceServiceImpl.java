@@ -21,7 +21,7 @@ public class KostPriceServiceImpl implements KostPriceService {
 
     @Override
     public KostPrice update(KostPrice kostPrice) {
-        KostPrice prevKostPrice = getByKostId(kostPrice.getId());
+        KostPrice prevKostPrice = getByKostId(kostPrice.getKost().getId());
         return kostPriceRepository.save(KostPrice.builder()
                 .id(prevKostPrice.getId())
                 .price(prevKostPrice.getPrice())

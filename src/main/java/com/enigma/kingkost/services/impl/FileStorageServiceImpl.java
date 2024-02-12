@@ -1,41 +1,29 @@
 package com.enigma.kingkost.services.impl;
 
-import com.enigma.kingkost.entities.Image;
-import com.enigma.kingkost.services.ImageService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.webjars.NotFoundException;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
-public class FileStorageService implements com.enigma.kingkost.services.FileStorageService {
+public class FileStorageServiceImpl implements com.enigma.kingkost.services.FileStorageService {
     private final Path fileStorageLocation;
-    private final ImageService imageService;
     private final String PATH_GET_IMAGE;
 
 
-    public FileStorageService(@Value("${app.kingkost.path.saveimage}") String pathLocation, ImageService imageService, @Value("${app.kingkost.path.getimage}") String pathGetImage) {
+    public FileStorageServiceImpl(@Value("${app.kingkost.path.saveimage}") String pathLocation, @Value("${app.kingkost.path.getimage}") String pathGetImage) {
         try {
             PATH_GET_IMAGE = pathGetImage;
-            this.imageService = imageService;
             Files.createDirectories(this.fileStorageLocation = Paths.get(pathLocation));
         } catch (Exception e) {
             throw new RuntimeException("Could not create directory");
@@ -51,7 +39,7 @@ public class FileStorageService implements com.enigma.kingkost.services.FileStor
         }
         try {
             String[] arrString = file.getContentType().split("/");
-            String contentType = arrString[0] + "-" + Math.random() + '-' + arrString[1];
+            String contentType = arrString[0] + "-" + Math.random() + '.' + arrString[1];
             Path targetLocation = this.fileStorageLocation.resolve(contentType);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return contentType;

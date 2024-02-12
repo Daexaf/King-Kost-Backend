@@ -72,4 +72,13 @@ public class SubdistrictServiceImpl implements SubdistrictService {
         List<Subdistrict> subdistrictList = subdistrictRepository.findAll();
         return SubdistrictMapper.subdistrictListToSubdistrictResponse(subdistrictList);
     }
+
+    @Override
+    public Subdistrict getSubdistrictById(String id) {
+        Subdistrict subdistrict = subdistrictRepository.findById(id).orElse(null);
+        if (subdistrict == null) {
+            throw new NotFoundException("Subdistrict not found");
+        }
+        return subdistrict;
+    }
 }

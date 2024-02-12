@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -43,6 +44,10 @@ public class Kost {
     @ManyToOne
     @JoinColumn(name = "subdistrict_id")
     private Subdistrict subdistrict;
+    @OneToMany(mappedBy = "kost")
+    private List<KostPrice> kostPrices;
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     @Column(name = "updated_at")

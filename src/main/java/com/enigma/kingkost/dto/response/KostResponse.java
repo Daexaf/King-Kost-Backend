@@ -27,7 +27,7 @@ public class KostResponse {
     private Boolean isParking;
     private GenderType genderType;
     private SellerResponse seller;
-    private List<Image> images;
+    private List<ImageResponse> images;
     private ProvinceResponse province;
     private CityResponse city;
     private SubdistrictResponse subdistrict;
