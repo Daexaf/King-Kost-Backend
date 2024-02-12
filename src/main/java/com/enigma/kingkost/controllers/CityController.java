@@ -13,7 +13,6 @@ import java.util.List;
 
 @CrossOrigin(origins = AppPath.URL_CROSS)
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping(AppPath.VALUE_CITY)
 @RequiredArgsConstructor
 public class CityController {

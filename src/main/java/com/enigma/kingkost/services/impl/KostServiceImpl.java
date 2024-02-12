@@ -81,7 +81,7 @@ public class KostServiceImpl implements KostService {
         }
 
         SellerResponse findSeller = sellerService.getById(kostRequest.getSellerId());
-        GenderType genderTypeSeller = genderService.getById(findSeller.getGenderTypeId());
+        GenderType genderTypeSeller = genderService.getById(String.valueOf(findSeller.getGenderTypeId()));
         GenderType genderTypeKost = genderService.getById(kostRequest.getGenderId());
 
         Kost saveKost = kostRepository.save(Kost.builder()
@@ -221,7 +221,7 @@ public class KostServiceImpl implements KostService {
                                 .address(kost.getSeller().getAddress())
                                 .email(kost.getSeller().getEmail())
                                 .phoneNumber(kost.getSeller().getPhoneNumber())
-                                .genderTypeId(kost.getSeller().getGenderTypeId().getName().name())
+                                .genderTypeId(kost.getSeller().getGenderTypeId())
                                 .build())
                         .images(imageList)
                         .province(ProvinceMapper.provinceToProvinceResponse(kost.getProvince()))
@@ -249,7 +249,7 @@ public class KostServiceImpl implements KostService {
         SellerResponse sellerResponse = sellerService.getById(kostRequest.getSellerId());
         Kost findKost = getById(kostRequest.getId());
         KostPrice kostPrice = kostPriceService.getByKostId(findKost.getId());
-        GenderType genderTypeSeller = genderService.getById(sellerResponse.getGenderTypeId());
+        GenderType genderTypeSeller = genderService.getById(sellerResponse.getGenderTypeId().getId());
         GenderType genderTypeKost = genderService.getById(kostRequest.getGenderId());
         ProvinceResponse provinceResponse = provinceService.getProvinceById(kostRequest.getProvinceId());
         City city = cityService.getCityById(kostRequest.getCityId());

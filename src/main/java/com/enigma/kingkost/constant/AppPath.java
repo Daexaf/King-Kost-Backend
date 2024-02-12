@@ -17,5 +17,5 @@ public class AppPath {
     public final static String VALUE_ID = "/{id}";
     public final static String VALUE_IMAGE = "/image";
     public final static String URL_CROSS = "localhost:5173";
-
+    public final static String REVIEW = "/review";
 }
