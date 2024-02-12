@@ -19,5 +19,5 @@ public interface CustomerService {
 
     CustomerResponse getById(String id);
 
-    CustomerResponse addProfileImage(String customerId, MultipartFile profileImage) throws IOException;
+    CustomerResponse addOrUpdateProfileImageForCustomer(String customerId, MultipartFile profileImage) throws IOException;
 }

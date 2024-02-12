@@ -4,10 +4,12 @@ import com.enigma.kingkost.dto.request.CustomerRequest;
 import com.enigma.kingkost.dto.response.CustomerResponse;
 import com.enigma.kingkost.entities.Customer;
 import com.enigma.kingkost.entities.GenderType;
+import com.enigma.kingkost.entities.Images;
 import com.enigma.kingkost.entities.UserCredential;
 import com.enigma.kingkost.repositories.CustomerRepository;
 import com.enigma.kingkost.services.CustomerService;
 import com.enigma.kingkost.services.GenderService;
+import com.enigma.kingkost.services.ImagesService;
 import com.enigma.kingkost.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final GenderService genderService;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final ImagesService imagesService;
 
     @Override
     public CustomerResponse createCustomer(Customer customerRequest) {
@@ -91,19 +94,47 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponse addProfileImage(String customerId, MultipartFile profileImage) throws IOException {
+    public CustomerResponse addOrUpdateProfileImageForCustomer(String customerId, MultipartFile profileImage) throws IOException {
+        Images images = imagesService.store(profileImage);
+        Customer customer = customerRepository.findById(customerId).orElse(null);
+
+        if(customer != null){
+            customer.setProfileImageName(images.getName());
+            customer.setProfileImageType(images.getType());
+            customer.setProfileImageData(images.getData());
+            Customer updatedCustomer = customerRepository.save(customer);
+            return convertToResponse(updatedCustomer);
+        }
+
         return null;
     }
 
-    private CustomerResponse getCustomerResponse(Customer customer) {
-        GenderType gender =  customer.getGenderTypeId();
+    private CustomerResponse convertToResponse(Customer customer) {
         return CustomerResponse.builder()
                 .id(customer.getId())
-                .address(customer.getAddress())
-                .phoneNumber(customer.getPhoneNumber())
-                .email(customer.getEmail())
                 .fullName(customer.getFullName())
-                .genderTypeId(gender)
+                .email(customer.getEmail())
+                .genderTypeId(customer.getGenderTypeId())
+                .phoneNumber(customer.getPhoneNumber())
+                .address(customer.getAddress())
+                .profileImageName(customer.getProfileImageName())
+                .profileImageType(customer.getProfileImageType())
+                .profileImageData(customer.getProfileImageData())
                 .build();
     }
+
+    private CustomerResponse getCustomerResponse(Customer customer) {
+        return CustomerResponse.builder()
+                .id(customer.getId())
+                .fullName(customer.getFullName())
+                .email(customer.getEmail())
+                .genderTypeId(customer.getGenderTypeId())
+                .phoneNumber(customer.getPhoneNumber())
+                .address(customer.getAddress())
+                .profileImageName(customer.getProfileImageName())
+                .profileImageType(customer.getProfileImageType())
+                .profileImageData(customer.getProfileImageData())
+                .build();
+    }
+
 }

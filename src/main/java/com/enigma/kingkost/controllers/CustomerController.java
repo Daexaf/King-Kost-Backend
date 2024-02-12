@@ -3,10 +3,18 @@ package com.enigma.kingkost.controllers;
 import com.enigma.kingkost.constant.AppPath;
 import com.enigma.kingkost.dto.request.CustomerRequest;
 import com.enigma.kingkost.dto.response.CustomerResponse;
+import com.enigma.kingkost.dto.response.SellerResponse;
+import com.enigma.kingkost.entities.Images;
 import com.enigma.kingkost.services.CustomerService;
+import com.enigma.kingkost.services.ImagesService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -15,6 +23,7 @@ import java.util.List;
 @RequestMapping(AppPath.CUSTOMER)
 public class CustomerController {
     private final CustomerService customerService;
+    private final ImagesService imagesService;
 
 //    @PostMapping("/v1")
 //    public CustomerResponse createCust(Cus customerRequest) {
@@ -39,5 +48,20 @@ public class CustomerController {
     @PutMapping("/v1")
     public CustomerResponse updateCustomer(@RequestBody CustomerRequest customerRequest) {
         return customerService.update(customerRequest);
+    }
+
+    @PostMapping(value = "/v1/upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CustomerResponse> uploadCustomerImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
+        try {
+            CustomerResponse customer = customerService.addOrUpdateProfileImageForCustomer(id, file);
+            if (customer != null) {
+                return ResponseEntity.ok(customer);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IOException e) {
+            // Penanganan eksepsi lebih lanjut sesuai kebutuhan
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

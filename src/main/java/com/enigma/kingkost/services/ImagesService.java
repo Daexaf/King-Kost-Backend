@@ -17,9 +17,4 @@ public interface ImagesService {
     Images getImages(String id);
 
     Stream<Images> getAllImages();
-
-//    CustomerResponse addOrUpdateProfileImageForCustomer(String customerId, MultipartFile profileImage) throws IOException;
-//
-//    SellerResponse addOrUpdateProfileImageForSeller(String sellerId, MultipartFile profileImage) throws IOException;
-
 }
