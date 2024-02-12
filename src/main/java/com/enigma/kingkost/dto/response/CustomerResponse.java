@@ -17,4 +17,8 @@ public class CustomerResponse {
     private GenderType genderTypeId;
     private String phoneNumber;
     private String address;
+
+    private String profileImageName;
+    private String profileImageType;
+    private byte[] profileImageData;
 }

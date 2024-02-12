@@ -12,7 +12,9 @@ import com.enigma.kingkost.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,6 +88,11 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = customerRepository.findById(id).orElse(null);
         assert customer != null;
         return getCustomerResponse(customer);
+    }
+
+    @Override
+    public CustomerResponse addProfileImage(String customerId, MultipartFile profileImage) throws IOException {
+        return null;
     }
 
     private CustomerResponse getCustomerResponse(Customer customer) {

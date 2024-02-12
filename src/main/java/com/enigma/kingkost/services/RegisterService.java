@@ -7,7 +7,7 @@ import com.enigma.kingkost.dto.response.RegisterResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface RegisterService {
-    RegisterResponse registerCustomer(RegisterRequest registerRequest, MultipartFile profileImage);
+    RegisterResponse registerCustomer(RegisterRequest registerRequest);
 
     RegisterResponse registerSeller(RegisterRequest registerRequest);
 

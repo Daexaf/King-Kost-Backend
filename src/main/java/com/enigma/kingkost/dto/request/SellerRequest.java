@@ -18,7 +18,7 @@ public class SellerRequest {
     @NotBlank(message = "Email is required")
     private String email;
     @NotBlank(message = "Gender is required")
-    private GenderType genderTypeId;
+    private String genderTypeId;
     @NotBlank(message = "Phone Number is required")
     private String phoneNumber;
     @NotBlank(message = "Address is required")
@@ -27,5 +27,9 @@ public class SellerRequest {
     private String username;
     @NotBlank(message = "password is required")
     private String password;
-    private String userCredentialId;
+    private boolean active;
+
+    private String profileImageName;
+    private String profileImageType;
+    private byte[] profileImageData;
 }

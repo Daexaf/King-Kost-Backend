@@ -16,10 +16,10 @@ import java.util.List;
 public class SellerController {
     private final SellerService sellerService;
 
-    @PostMapping("/v1")
-    public SellerResponse createSell(SellerRequest sellerRequest) {
-        return sellerService.createSeller(sellerRequest);
-    }
+//    @PostMapping("/v1")
+//    public SellerResponse createSell(SellerRequest sellerRequest) {
+//        return sellerService.createSeller(sellerRequest);
+//    }
 
     @GetMapping("/v1")
     public List<SellerResponse> getAllSeller() {
@@ -37,7 +37,7 @@ public class SellerController {
     }
 
     @PutMapping("/v1")
-    public SellerResponse updateSell(SellerRequest sellerRequest) {
+    public SellerResponse updateSell(@RequestBody SellerRequest sellerRequest) {
         return sellerService.updateSeller(sellerRequest);
     }
 

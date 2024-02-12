@@ -2,15 +2,10 @@ package com.enigma.kingkost.services.impl;
 
 import com.enigma.kingkost.constant.ERole;
 import com.enigma.kingkost.dto.request.AdminRequest;
-import com.enigma.kingkost.dto.request.CustomerRequest;
 import com.enigma.kingkost.dto.request.RegisterRequest;
-import com.enigma.kingkost.dto.request.SellerRequest;
 import com.enigma.kingkost.dto.response.AdminResponse;
 import com.enigma.kingkost.dto.response.RegisterResponse;
-import com.enigma.kingkost.entities.Customer;
-import com.enigma.kingkost.entities.GenderType;
-import com.enigma.kingkost.entities.RoleType;
-import com.enigma.kingkost.entities.UserCredential;
+import com.enigma.kingkost.entities.*;
 import com.enigma.kingkost.repositories.UserCredentialRepository;
 import com.enigma.kingkost.services.*;
 import com.enigma.kingkost.util.ValidationUtil;
@@ -39,7 +34,7 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Transactional(rollbackOn = Exception.class)
     @Override
-    public RegisterResponse registerCustomer(RegisterRequest request, MultipartFile profileImage) {
+    public RegisterResponse registerCustomer(RegisterRequest request) {
         try {
             validationUtil.validate(request);
             System.out.println("Received Username: " + request.getFullName());
@@ -71,11 +66,11 @@ public class RegisterServiceImpl implements RegisterService {
                     .userCredential(userCredential)
                     .build();
 
-            if (profileImage != null) {
-                customer.setProfileImageName(profileImage.getOriginalFilename());
-                customer.setProfileImageType(profileImage.getContentType());
-                customer.setProfileImageData(profileImage.getBytes());
-            }
+//            if (profileImage != null) {
+//                customer.setProfileImageName(profileImage.getOriginalFilename());
+//                customer.setProfileImageType(profileImage.getContentType());
+//                customer.setProfileImageData(profileImage.getBytes());
+//            }
             customerService.createCustomer(customer);
             return RegisterResponse.builder()
                     .username(userCredential.getUsername())
@@ -84,8 +79,6 @@ public class RegisterServiceImpl implements RegisterService {
 
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Customer already exist");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -114,27 +107,27 @@ public class RegisterServiceImpl implements RegisterService {
                     .build();
             userCredentialRepository.saveAndFlush(userCredential);
 
-            SellerRequest seller = SellerRequest.builder()
+            Seller seller = Seller.builder()
                     .fullName(request.getFullName())
                     .email(request.getEmail())
                     .address(request.getAddress())
                     .genderTypeId(gender)
                     .phoneNumber(request.getPhoneNumber())
-                    .userCredentialId(userCredential.getId())
+                    .userCredential(userCredential)
                     .build();
+
 //            if (profileImage != null) {
-//                customer.setProfileImageName(profileImage.getOriginalFilename());
-//                customer.setProfileImageType(profileImage.getContentType());
-//                customer.setProfileImageData(profileImage.getBytes());
+//                seller.setProfileImageName(profileImage.getOriginalFilename());
+//                seller.setProfileImageType(profileImage.getContentType());
+//                seller.setProfileImageData(profileImage.getBytes());
 //            }
             sellerService.createSeller(seller);
             return RegisterResponse.builder()
                     .username(userCredential.getUsername())
                     .role(userCredential.getRoleTypeId().getName().toString())
                     .build();
-
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Customer already exist");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Seller already exist");
         }
     }
 

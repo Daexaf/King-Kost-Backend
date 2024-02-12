@@ -23,8 +23,8 @@ public class RegisterController {
     }
 
     @PostMapping("/register/customer")
-    public RegisterResponse registerCustomer(@RequestBody RegisterRequest registerRequest, @RequestParam("profileImage")MultipartFile profileImage) {
-        return registerService.registerCustomer(registerRequest, profileImage);
+    public RegisterResponse registerCustomer(@RequestBody RegisterRequest registerRequest) {
+        return registerService.registerCustomer(registerRequest);
     }
 
     @PostMapping("/register/admin")

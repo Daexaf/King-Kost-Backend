@@ -2,7 +2,9 @@ package com.enigma.kingkost.services;
 import com.enigma.kingkost.dto.request.CustomerRequest;
 import com.enigma.kingkost.dto.response.CustomerResponse;
 import com.enigma.kingkost.entities.Customer;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface CustomerService {
@@ -16,4 +18,6 @@ public interface CustomerService {
     List<CustomerResponse> getAllCustomers();
 
     CustomerResponse getById(String id);
+
+    CustomerResponse addProfileImage(String customerId, MultipartFile profileImage) throws IOException;
 }

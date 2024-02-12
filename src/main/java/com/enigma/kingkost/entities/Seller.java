@@ -23,7 +23,14 @@ public class Seller {
     private GenderType genderTypeId;
     private String phoneNumber;
     private String address;
-    private String userCredentialId;
+    @OneToOne
+    @JoinColumn(name = "seller_credential_id")
+    private UserCredential userCredential;
+    private String profileImageName;
+    private String profileImageType;
+    @Lob
+    private byte[] profileImageData;
+    private boolean active = false;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
