@@ -98,7 +98,7 @@ public class CustomerServiceImpl implements CustomerService {
         Images images = imagesService.store(profileImage);
         Customer customer = customerRepository.findById(customerId).orElse(null);
 
-        if(customer != null){
+        if (customer != null) {
             customer.setProfileImageName(images.getName());
             customer.setProfileImageType(images.getType());
             customer.setProfileImageData(images.getData());
@@ -107,6 +107,26 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         return null;
+    }
+
+    @Override
+    public CustomerResponse getCustomerByUserCredentialId(String userCredentialId) {
+        Customer findCustomer = customerRepository.findByUserCredentialId(userCredentialId).orElse(null);
+        if (findCustomer == null) {
+            throw new NullPointerException("Customer not found");
+        }
+        return CustomerResponse.builder()
+                .id(findCustomer.getId())
+                .username(findCustomer.getUserCredential().getUsername())
+                .address(findCustomer.getAddress())
+                .profileImageData(findCustomer.getProfileImageData())
+                .profileImageType(findCustomer.getProfileImageType())
+                .profileImageName(findCustomer.getProfileImageName())
+                .phoneNumber(findCustomer.getPhoneNumber())
+                .email(findCustomer.getEmail())
+                .genderTypeId(findCustomer.getGenderTypeId())
+                .fullName(findCustomer.getFullName())
+                .build();
     }
 
     private CustomerResponse convertToResponse(Customer customer) {

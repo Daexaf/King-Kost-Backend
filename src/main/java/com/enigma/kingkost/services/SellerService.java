@@ -1,6 +1,7 @@
 package com.enigma.kingkost.services;
 
 import com.enigma.kingkost.dto.request.SellerRequest;
+import com.enigma.kingkost.dto.response.CustomerResponse;
 import com.enigma.kingkost.dto.response.SellerResponse;
 import com.enigma.kingkost.entities.Seller;
 import org.springframework.stereotype.Service;
@@ -22,4 +23,6 @@ public interface SellerService {
     SellerResponse getById(String id);
 
     SellerResponse addOrUpdateProfileImageForSeller(String sellerId, MultipartFile profileImage) throws IOException;
+
+    SellerResponse getSellerByUserCredentialId(String userCredentialId);
 }

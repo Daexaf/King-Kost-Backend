@@ -108,6 +108,26 @@ public class SellerServiceImpl implements SellerService {
         return null;
     }
 
+    @Override
+    public SellerResponse getSellerByUserCredentialId(String userCredentialId) {
+        Seller findSeller = sellerRepository.findByUserCredentialId(userCredentialId).orElse(null);
+        if (findSeller == null) {
+            throw new NullPointerException("Seller not found");
+        }
+        return SellerResponse.builder()
+                .id(findSeller.getId())
+                .username(findSeller.getUserCredential().getUsername())
+                .address(findSeller.getAddress())
+                .email(findSeller.getEmail())
+                .phoneNumber(findSeller.getPhoneNumber())
+                .genderTypeId(findSeller.getGenderTypeId())
+                .profileImageData(findSeller.getProfileImageData())
+                .profileImageType(findSeller.getProfileImageType())
+                .profileImageName(findSeller.getProfileImageName())
+                .fullName(findSeller.getFullName())
+                .build();
+    }
+
     private SellerResponse convertToResponse(Seller seller) {
         return SellerResponse.builder()
                 .id(seller.getId())

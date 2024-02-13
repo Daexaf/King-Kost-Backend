@@ -2,6 +2,7 @@ package com.enigma.kingkost.controllers;
 
 import com.enigma.kingkost.constant.AppPath;
 import com.enigma.kingkost.dto.request.CustomerRequest;
+import com.enigma.kingkost.dto.response.CommondResponse;
 import com.enigma.kingkost.dto.response.CustomerResponse;
 import com.enigma.kingkost.dto.response.SellerResponse;
 import com.enigma.kingkost.entities.Images;
@@ -59,8 +60,17 @@ public class CustomerController {
                 return ResponseEntity.notFound().build();
             }
         } catch (IOException e) {
-            // Penanganan eksepsi lebih lanjut sesuai kebutuhan
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping(AppPath.VALUE_GET_CUSTOMER)
+    public ResponseEntity<CommondResponse> getCustomerByUserCredentialId(@PathVariable String id) {
+        CustomerResponse customerResponse = customerService.getCustomerByUserCredentialId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(CommondResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success get customer")
+                .data(customerResponse)
+                .build());
     }
 }

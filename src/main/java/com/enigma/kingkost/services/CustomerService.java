@@ -20,4 +20,6 @@ public interface CustomerService {
     CustomerResponse getById(String id);
 
     CustomerResponse addOrUpdateProfileImageForCustomer(String customerId, MultipartFile profileImage) throws IOException;
+
+    CustomerResponse getCustomerByUserCredentialId(String userCredentialId);
 }
