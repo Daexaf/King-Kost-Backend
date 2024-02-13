@@ -23,7 +23,6 @@ import java.util.List;
 @RequestMapping(AppPath.CUSTOMER)
 public class CustomerController {
     private final CustomerService customerService;
-    private final ImagesService imagesService;
 
 //    @PostMapping("/v1")
 //    public CustomerResponse createCust(Cus customerRequest) {

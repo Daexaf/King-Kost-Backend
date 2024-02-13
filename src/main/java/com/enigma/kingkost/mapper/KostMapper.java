@@ -29,7 +29,7 @@ public class KostMapper {
                         .email(kost.getSeller().getEmail())
                         .phoneNumber(kost.getSeller().getPhoneNumber())
                         .address(kost.getSeller().getAddress())
-                        .genderTypeId(kost.getSeller().getGenderTypeId().getName().name())
+                        .genderTypeId(kost.getSeller().getGenderTypeId())
                         .build())
                 .images(ImageMapper.listImageToListImageResponse(images))
                 .province(ProvinceResponse.builder()
