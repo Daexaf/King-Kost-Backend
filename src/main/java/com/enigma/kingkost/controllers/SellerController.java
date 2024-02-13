@@ -3,9 +3,8 @@ package com.enigma.kingkost.controllers;
 import com.enigma.kingkost.constant.AppPath;
 import com.enigma.kingkost.dto.request.SellerRequest;
 import com.enigma.kingkost.dto.response.CommondResponse;
-import com.enigma.kingkost.dto.response.CustomerResponse;
 import com.enigma.kingkost.dto.response.SellerResponse;
-import com.enigma.kingkost.services.ImagesService;
+import com.enigma.kingkost.services.ImagesProfileService;
 import com.enigma.kingkost.services.SellerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,7 @@ import java.util.List;
 @RequestMapping(AppPath.SELLER)
 public class SellerController {
     private final SellerService sellerService;
-    private final ImagesService imagesService;
+    private final ImagesProfileService imagesProfileService;
 
 //    @PostMapping("/v1")
 //    public SellerResponse createSell(SellerRequest sellerRequest) {

@@ -4,12 +4,12 @@ import com.enigma.kingkost.dto.request.CustomerRequest;
 import com.enigma.kingkost.dto.response.CustomerResponse;
 import com.enigma.kingkost.entities.Customer;
 import com.enigma.kingkost.entities.GenderType;
-import com.enigma.kingkost.entities.Images;
+import com.enigma.kingkost.entities.ImagesProfile;
 import com.enigma.kingkost.entities.UserCredential;
 import com.enigma.kingkost.repositories.CustomerRepository;
 import com.enigma.kingkost.services.CustomerService;
 import com.enigma.kingkost.services.GenderService;
-import com.enigma.kingkost.services.ImagesService;
+import com.enigma.kingkost.services.ImagesProfileService;
 import com.enigma.kingkost.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final GenderService genderService;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final ImagesService imagesService;
+    private final ImagesProfileService imagesProfileService;
 
     @Override
     public CustomerResponse createCustomer(Customer customerRequest) {
@@ -95,13 +95,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse addOrUpdateProfileImageForCustomer(String customerId, MultipartFile profileImage) throws IOException {
-        Images images = imagesService.store(profileImage);
+        ImagesProfile imagesProfile = imagesProfileService.store(profileImage);
         Customer customer = customerRepository.findById(customerId).orElse(null);
 
         if (customer != null) {
-            customer.setProfileImageName(images.getName());
-            customer.setProfileImageType(images.getType());
-            customer.setProfileImageData(images.getData());
+            customer.setProfileImageName(imagesProfile.getName());
+            customer.setProfileImageType(imagesProfile.getType());
+            customer.setUrl(imagesProfile.getUrl());
             Customer updatedCustomer = customerRepository.save(customer);
             return convertToResponse(updatedCustomer);
         }
@@ -117,9 +117,8 @@ public class CustomerServiceImpl implements CustomerService {
         }
         return CustomerResponse.builder()
                 .id(findCustomer.getId())
-                .username(findCustomer.getUserCredential().getUsername())
                 .address(findCustomer.getAddress())
-                .profileImageData(findCustomer.getProfileImageData())
+                .url(findCustomer.getUrl())
                 .profileImageType(findCustomer.getProfileImageType())
                 .profileImageName(findCustomer.getProfileImageName())
                 .phoneNumber(findCustomer.getPhoneNumber())
@@ -139,7 +138,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .address(customer.getAddress())
                 .profileImageName(customer.getProfileImageName())
                 .profileImageType(customer.getProfileImageType())
-                .profileImageData(customer.getProfileImageData())
+                .url(customer.getUrl())
                 .build();
     }
 
@@ -153,7 +152,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .address(customer.getAddress())
                 .profileImageName(customer.getProfileImageName())
                 .profileImageType(customer.getProfileImageType())
-                .profileImageData(customer.getProfileImageData())
+                .url(customer.getUrl())
                 .build();
     }
 

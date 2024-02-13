@@ -31,5 +31,5 @@ public class CustomerRequest {
 
     private String profileImageName;
     private String profileImageType;
-    private byte[] profileImageData;
+    private String url;
 }
