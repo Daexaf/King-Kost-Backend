@@ -46,6 +46,7 @@ public class LoginServiceImpl implements LoginService {
                     .username(appUser.getUsername())
                     .token(token)
                     .role(appUser.getRole().name())
+                    .userId(appUser.getId())
                     .build();
 
         } catch (AuthenticationException e) {
