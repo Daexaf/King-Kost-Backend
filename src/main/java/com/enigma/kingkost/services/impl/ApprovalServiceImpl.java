@@ -19,7 +19,7 @@ public class ApprovalServiceImpl implements ApprovalService {
         if (findTransactionKost.getAprStatus() > 0) {
             throw new NullPointerException("Transaction was approv");
         }
-        if (findTransactionKost.getKost().getSeller().getId() != sellerId) {
+        if (!findTransactionKost.getKost().getSeller().getId().equals(sellerId)) {
             throw new NullPointerException("Cannont approve transaction");
         }
         transactionKostService.update(TransactionKost.builder()

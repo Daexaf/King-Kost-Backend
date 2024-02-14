@@ -13,6 +13,8 @@ public class CityMapper {
                      .id(city.getId())
                      .name(city.getName())
                      .province(city.getProvince())
+                     .createdAt(city.getCreatedAt())
+                     .updatedAt(city.getUpdatedAt())
              .build()));
      return listCityResponse;
     }
@@ -22,6 +24,8 @@ public class CityMapper {
                 .id(city.getId())
                 .name(city.getName())
                 .province(city.getProvince())
+                .createdAt(city.getCreatedAt())
+                .updatedAt(city.getUpdatedAt())
                 .build();
     }
 }

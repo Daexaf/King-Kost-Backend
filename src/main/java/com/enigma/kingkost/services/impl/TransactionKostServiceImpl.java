@@ -4,6 +4,7 @@ import com.enigma.kingkost.dto.request.TransactionKostRequest;
 import com.enigma.kingkost.dto.response.CustomerResponse;
 import com.enigma.kingkost.dto.response.KostResponse;
 import com.enigma.kingkost.entities.*;
+import com.enigma.kingkost.mapper.KostMapper;
 import com.enigma.kingkost.repositories.TransactionKostRepository;
 import com.enigma.kingkost.services.*;
 import jakarta.transaction.Transactional;
@@ -25,17 +26,20 @@ public class TransactionKostServiceImpl implements TransactionKostService {
     @Transactional(rollbackOn = Exception.class)
     @Override
     public TransactionKost create(TransactionKostRequest transactionKostRequest) {
-        KostResponse findKost = kostService.getByIdKost(transactionKostRequest.getKostId());
+        Kost findKost = kostService.getById(transactionKostRequest.getKostId());
         CustomerResponse findCustomer = customerService.getById(transactionKostRequest.getCustomerId());
         MonthType monthType = monthService.getById(transactionKostRequest.getMonthTypeId());
         PaymentType paymentType = paymentService.getById(transactionKostRequest.getPaymentTypeId());
 
-       TransactionKost transactionKost = transactionKostRepository.save(TransactionKost.builder()
-                .kost(Kost.builder()
-                        .id(findKost.getId())
-                        .build())
+        return transactionKostRepository.save(TransactionKost.builder()
+                .kost(findKost)
                 .customer(Customer.builder()
                         .id(findCustomer.getId())
+                        .address(findCustomer.getAddress())
+                        .fullName(findCustomer.getFullName())
+                        .email(findCustomer.getEmail())
+                        .genderTypeId(findCustomer.getGenderTypeId())
+                        .phoneNumber(findCustomer.getPhoneNumber())
                         .build())
                 .monthType(monthType)
                 .paymentType(paymentType)
@@ -43,7 +47,7 @@ public class TransactionKostServiceImpl implements TransactionKostService {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build());
-        return transactionKost;
+
     }
 
     @Override
