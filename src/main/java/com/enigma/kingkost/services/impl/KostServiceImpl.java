@@ -121,15 +121,7 @@ public class KostServiceImpl implements KostService {
         List<Image> listImageSave = new ArrayList<>();
 
         Arrays.stream(kostRequest.getImage()).forEach(image -> {
-            String fileName = fileStorageService.storageFile(image);
-            Image saveImage = Image.builder()
-                    .fileName(fileName)
-                    .isActive(true)
-                    .kost(saveKost)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-            imageService.save(saveImage);
-            listImageSave.add(saveImage);
+
         });
         if (listImageSave.isEmpty()) {
             throw new NullPointerException("List image null");
@@ -440,9 +432,7 @@ public class KostServiceImpl implements KostService {
     public void updateImageKost(UpdateImageKostRequest updateImageKostRequest) {
         Kost kost = getById(updateImageKostRequest.getKost_id());
         String fileNameImage = null;
-        for (MultipartFile multipartFile : updateImageKostRequest.getFileImages()) {
-            fileNameImage = fileStorageService.storageFile(multipartFile);
-        }
+
         if (fileNameImage == null) {
             throw new NullPointerException("File image null");
         }

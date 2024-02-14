@@ -1,6 +1,7 @@
 package com.enigma.kingkost.controllers;
 
 import com.enigma.kingkost.constant.AppPath;
+import com.enigma.kingkost.dto.response.CommondResponse;
 import com.enigma.kingkost.services.impl.FileStorageServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -18,15 +20,14 @@ import java.io.IOException;
 public class ImageController {
     private final FileStorageServiceImpl fileStorageServiceImpl;
 
-    @GetMapping(produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getImage(@PathVariable String imageName) throws IOException {
-        byte[] imgBytes = fileStorageServiceImpl.getImageStatic(imageName);
-        if (imgBytes == null) {
-            return ResponseEntity.notFound().build();
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
-
-        return new ResponseEntity<>(imgBytes, headers, HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<CommondResponse> saveImage(@RequestParam("file") MultipartFile file) throws IOException {
+        String fileUrl = fileStorageServiceImpl.uploadFile(file);
+        return ResponseEntity.status(HttpStatus.OK).body(CommondResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success save image")
+                .data(fileUrl)
+                .build());
     }
+
 }

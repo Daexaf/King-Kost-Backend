@@ -5,7 +5,6 @@ import com.enigma.kingkost.services.ApprovalService;
 import com.enigma.kingkost.services.TransactionKostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
 
