@@ -80,7 +80,7 @@ public class KostController {
         KostResponse kostResponse = kostService.updateKost(updateKostRequest);
         return ResponseEntity.status(HttpStatus.OK).body(CommondResponse.builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success update ksot")
+                .message("Success update kost")
                 .data(kostResponse)
                 .build());
     }

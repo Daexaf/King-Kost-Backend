@@ -6,11 +6,10 @@ import com.enigma.kingkost.entities.Kost;
 
 import java.util.List;
 
-public interface ImageService {
+public interface ImageKostService {
     Image save(Image image);
     List<ImageResponse> getImageByKostId(String kostId);
     List<ImageResponse> updateImage(Image image);
-    List<Image> getAllImage();
     void deleteImage(ImageResponse imageResponse, Kost kost);
     List<Image> getByKostId(String id);
     Image getImageById(String id);

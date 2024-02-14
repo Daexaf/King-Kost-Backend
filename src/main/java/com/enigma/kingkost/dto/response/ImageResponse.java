@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 public class ImageResponse {
     private String id;
-    private String fileName;
+    private String url;
     private String kost_id;
     private Boolean isActive;
 }

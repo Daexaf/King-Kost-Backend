@@ -5,7 +5,7 @@ import com.enigma.kingkost.entities.Image;
 import com.enigma.kingkost.entities.Kost;
 import com.enigma.kingkost.mapper.ImageMapper;
 import com.enigma.kingkost.repositories.ImageRepository;
-import com.enigma.kingkost.services.ImageService;
+import com.enigma.kingkost.services.ImageKostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ImageServiceImpl implements ImageService {
+public class ImageKostServiceImpl implements ImageKostService {
     private final ImageRepository imageRepository;
 
     @Override
@@ -36,11 +36,11 @@ public class ImageServiceImpl implements ImageService {
     public List<ImageResponse> updateImage(Image image) {
         List<Image> imageList = getByKostId(image.getKost().getId());
         imageList.forEach((prevImage -> {
-            if (!image.getFileName().equals(prevImage.getFileName())) {
+            if (!image.getUrl().equals(prevImage.getUrl())) {
                 save(image);
                 save(Image.builder()
                         .id(prevImage.getId())
-                        .fileName(prevImage.getFileName())
+                        .url(prevImage.getUrl())
                         .kost(prevImage.getKost())
                         .isActive(false)
                         .createdAt(prevImage.getCreatedAt())
@@ -52,16 +52,11 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<Image> getAllImage() {
-        return imageRepository.findAll();
-    }
-
-    @Override
     public void deleteImage(ImageResponse imageResponse, Kost kost) {
         Image image = getImageById(imageResponse.getId());
         Image prevImage = Image.builder()
                 .id(imageResponse.getId())
-                .fileName(imageResponse.getFileName())
+                .url(imageResponse.getUrl())
                 .kost(kost)
                 .isActive(false)
                 .createdAt(image.getCreatedAt())
