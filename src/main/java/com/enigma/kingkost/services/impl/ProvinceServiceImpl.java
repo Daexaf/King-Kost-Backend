@@ -40,6 +40,7 @@ public class ProvinceServiceImpl implements ProvinceService {
                             .id(provinceResponse.getId())
                             .name(provinceResponse.getName())
                             .createdAt(LocalDateTime.now())
+                            .updatedAt(LocalDateTime.now())
                             .build());
                 }
             } else {

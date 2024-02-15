@@ -1,12 +1,11 @@
 package com.enigma.kingkost.services.impl;
 
 import com.enigma.kingkost.dto.request.SellerRequest;
-import com.enigma.kingkost.dto.response.CustomerResponse;
 import com.enigma.kingkost.dto.response.SellerResponse;
 import com.enigma.kingkost.entities.*;
 import com.enigma.kingkost.repositories.SellerRepository;
 import com.enigma.kingkost.services.GenderService;
-import com.enigma.kingkost.services.ImagesService;
+import com.enigma.kingkost.services.ImagesProfileService;
 import com.enigma.kingkost.services.SellerService;
 import com.enigma.kingkost.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ public class SellerServiceImpl implements SellerService {
     private final GenderService genderService;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final ImagesService imagesService;
+    private final ImagesProfileService imagesProfileService;
 
     @Override
     public SellerResponse createSeller(Seller sellerRequest) {
@@ -101,13 +100,13 @@ public class SellerServiceImpl implements SellerService {
 
     @Override
     public SellerResponse addOrUpdateProfileImageForSeller(String sellerId, MultipartFile profileImage) throws IOException {
-        Images images = imagesService.store(profileImage);
+        ImagesProfile imagesProfile = imagesProfileService.store(profileImage);
         Seller seller = sellerRepository.findById(sellerId).orElse(null);
 
         if(seller != null){
-            seller.setProfileImageName(images.getName());
-            seller.setProfileImageType(images.getType());
-            seller.setProfileImageData(images.getData());
+            seller.setProfileImageName(imagesProfile.getName());
+            seller.setProfileImageType(imagesProfile.getType());
+            seller.setUrl(imagesProfile.getUrl());
 
             Seller updatedSeller = sellerRepository.save(seller);
 
@@ -115,6 +114,25 @@ public class SellerServiceImpl implements SellerService {
         }
 
         return null;
+    }
+
+    @Override
+    public SellerResponse getSellerByUserCredentialId(String userCredentialId) {
+        Seller findSeller = sellerRepository.findByUserCredentialId(userCredentialId).orElse(null);
+        if (findSeller == null) {
+            throw new NullPointerException("Seller not found");
+        }
+        return SellerResponse.builder()
+                .id(findSeller.getId())
+                .address(findSeller.getAddress())
+                .email(findSeller.getEmail())
+                .phoneNumber(findSeller.getPhoneNumber())
+                .genderTypeId(findSeller.getGenderTypeId())
+                .url(findSeller.getUrl())
+                .profileImageType(findSeller.getProfileImageType())
+                .profileImageName(findSeller.getProfileImageName())
+                .fullName(findSeller.getFullName())
+                .build();
     }
 
     private SellerResponse convertToResponse(Seller seller) {
@@ -127,7 +145,7 @@ public class SellerServiceImpl implements SellerService {
                 .address(seller.getAddress())
                 .profileImageName(seller.getProfileImageName())
                 .profileImageType(seller.getProfileImageType())
-                .profileImageData(seller.getProfileImageData())
+                .url(seller.getUrl())
                 .build();
     }
 
@@ -139,6 +157,9 @@ public class SellerServiceImpl implements SellerService {
                 .email(seller.getEmail())
                 .phoneNumber(seller.getPhoneNumber())
                 .genderTypeId(seller.getGenderTypeId())
+                .profileImageType(seller.getProfileImageType())
+                .profileImageName(seller.getProfileImageName())
+                .url(seller.getUrl())
                 .build();
     }
 

@@ -1,6 +1,7 @@
 package com.enigma.kingkost.dto.response;
 
 import com.enigma.kingkost.entities.GenderType;
+import com.enigma.kingkost.entities.UserCredential;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +20,5 @@ public class CustomerResponse {
     private String address;
     private String profileImageName;
     private String profileImageType;
-    private byte[] profileImageData;
+    private String url;
 }

@@ -25,16 +25,22 @@ public class TransactionKostServiceImpl implements TransactionKostService {
     @Override
     public TransactionKost create(TransactionKostRequest transactionKostRequest) {
         Kost findKost = kostService.getById(transactionKostRequest.getKostId());
+
         kostService.ReduceItAvailableRoom(findKost);
         CustomerResponse findCustomer = customerService.getById(transactionKostRequest.getCustomerId());
         MonthType monthType = monthService.getById(transactionKostRequest.getMonthTypeId());
         PaymentType paymentType = paymentService.getById(transactionKostRequest.getPaymentTypeId());
-        TransactionKost transactionKost = transactionKostRepository.save(TransactionKost.builder()
+        return transactionKostRepository.save(TransactionKost.builder()
                 .kost(Kost.builder()
                         .id(findKost.getId())
                         .build())
                 .customer(Customer.builder()
                         .id(findCustomer.getId())
+                        .address(findCustomer.getAddress())
+                        .fullName(findCustomer.getFullName())
+                        .email(findCustomer.getEmail())
+                        .genderTypeId(findCustomer.getGenderTypeId())
+                        .phoneNumber(findCustomer.getPhoneNumber())
                         .build())
                 .monthType(monthType)
                 .paymentType(paymentType)
@@ -42,7 +48,7 @@ public class TransactionKostServiceImpl implements TransactionKostService {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build());
-        return transactionKost;
+
     }
 
     @Override

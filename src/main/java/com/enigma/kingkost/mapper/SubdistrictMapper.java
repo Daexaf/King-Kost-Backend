@@ -14,6 +14,8 @@ public class SubdistrictMapper {
                             .id(subdistrict.getId())
                             .name(subdistrict.getName())
                             .city(subdistrict.getCity())
+                            .createdAt(subdistrict.getCreatedAt())
+                            .updatedAt(subdistrict.getUpdatedAt())
                     .build());
         }));
         return subdistrictResponseList;
@@ -23,6 +25,8 @@ public class SubdistrictMapper {
                 .id(subdistrict.getId())
                 .name(subdistrict.getName())
                 .city(subdistrict.getCity())
+                .createdAt(subdistrict.getCreatedAt())
+                .updatedAt(subdistrict.getUpdatedAt())
                 .build();
     }
 }

@@ -1,4 +1,4 @@
-package com.enigma.kingkost.dto.response;
+package com.enigma.kingkost.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class ImagesResponse {
-    private Long id;
-    private String name;
-    private String type;
-    private byte[] data;
+public class ReviewRequest {
+    private String id;
+    private String message;
+    private String customerId;
 }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,4 +16,6 @@ public class SubdistrictResponse {
     private String id;
     private String name;
     private City city;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
