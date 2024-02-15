@@ -19,5 +19,5 @@ public class SellerResponse {
     private String address;
     private String profileImageName;
     private String profileImageType;
-    private byte[] profileImageData;
+    private String url;
 }

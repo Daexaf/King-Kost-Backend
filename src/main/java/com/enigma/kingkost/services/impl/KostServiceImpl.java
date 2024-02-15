@@ -88,6 +88,7 @@ public class KostServiceImpl implements KostService {
         }
 
         SellerResponse findSeller = sellerService.getById(kostRequest.getSellerId());
+        GenderType genderTypeSeller = genderService.getById(String.valueOf(findSeller.getGenderTypeId()));
         GenderType genderTypeKost = genderService.getById(kostRequest.getGenderId());
 
         Kost saveKost = kostRepository.save(Kost.builder()
