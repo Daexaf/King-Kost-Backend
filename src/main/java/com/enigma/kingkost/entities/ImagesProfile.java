@@ -10,7 +10,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder(toBuilder = true)
-public class Images {
+public class ImagesProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,6 +19,5 @@ public class Images {
 
     private String type;
 
-    @Lob
-    private byte[] data;
+    private String url;
 }

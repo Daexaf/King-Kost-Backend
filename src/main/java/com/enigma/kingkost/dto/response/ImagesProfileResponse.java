@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class ImagesResponse {
+public class ImagesProfileResponse {
     private Long id;
     private String name;
     private String type;
-    private byte[] data;
+    private String url;
 }

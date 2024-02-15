@@ -28,8 +28,7 @@ public class Seller {
     private UserCredential userCredential;
     private String profileImageName;
     private String profileImageType;
-    @Lob
-    private byte[] profileImageData;
+    private String url;
     private boolean active = false;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
