@@ -12,7 +12,7 @@ public class ImageMapper {
         imageList.forEach(image -> {
             imageResponseList.add(ImageResponse.builder()
                     .id(image.getId())
-                    .fileName(image.getFileName())
+                    .url(image.getUrl())
                     .isActive(image.getIsActive())
                     .kost_id(image.getKost().getId())
                     .build());

@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder(toBuilder = true)
-@Table(name = "m_image")
+@Table(name = "m_image_kost")
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @Column(name = "file_name")
-    private String fileName;
+    @Column(name = "url_image")
+    private String url;
     @JoinColumn(name = "kost_id")
     @ManyToOne
     private Kost kost;

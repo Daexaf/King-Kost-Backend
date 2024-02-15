@@ -90,6 +90,15 @@ public class SellerServiceImpl implements SellerService {
     }
 
     @Override
+    public Seller getSellerById(String id) {
+        Seller seller = sellerRepository.findById(id).orElse(null);
+        if (seller == null) {
+            throw new NullPointerException("Seller not found");
+        }
+        return seller;
+    }
+
+    @Override
     public SellerResponse addOrUpdateProfileImageForSeller(String sellerId, MultipartFile profileImage) throws IOException {
         ImagesProfile imagesProfile = imagesProfileService.store(profileImage);
         Seller seller = sellerRepository.findById(sellerId).orElse(null);
@@ -153,4 +162,6 @@ public class SellerServiceImpl implements SellerService {
                 .url(seller.getUrl())
                 .build();
     }
+
+
 }

@@ -51,6 +51,8 @@ public class CityServiceImpl implements CityService {
                                     .name(province.getName())
                                     .createdAt(LocalDateTime.now())
                                     .build())
+                            .createdAt(LocalDateTime.now())
+                            .updatedAt(LocalDateTime.now())
                             .build());
                 }
             });
@@ -65,7 +67,7 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public List<CityResponse> getByProvinceId(String id) {
-        if (id.isEmpty()){
+        if (id.isEmpty()) {
             throw new NullPointerException("Province id is required");
         }
         List<City> cities = cityRepository.findByProvinceId(id);

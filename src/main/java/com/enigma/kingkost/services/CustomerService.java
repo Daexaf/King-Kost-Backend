@@ -18,6 +18,7 @@ public interface CustomerService {
     List<CustomerResponse> getAllCustomers();
 
     CustomerResponse getById(String id);
+    Customer getCustomerById(String id);
 
     CustomerResponse addOrUpdateProfileImageForCustomer(String customerId, MultipartFile profileImage) throws IOException;
 

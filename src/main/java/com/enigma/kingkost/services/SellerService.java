@@ -21,6 +21,7 @@ public interface SellerService {
     List<SellerResponse> getAll();
 
     SellerResponse getById(String id);
+    Seller getSellerById(String id);
 
     SellerResponse addOrUpdateProfileImageForSeller(String sellerId, MultipartFile profileImage) throws IOException;
 

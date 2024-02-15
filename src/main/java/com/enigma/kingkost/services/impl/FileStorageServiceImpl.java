@@ -1,69 +1,40 @@
 package com.enigma.kingkost.services.impl;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Service
 public class FileStorageServiceImpl implements com.enigma.kingkost.services.FileStorageService {
-    private final Path fileStorageLocation;
-    private final String PATH_GET_IMAGE;
-
-
-    public FileStorageServiceImpl(@Value("${app.kingkost.path.saveimage}") String pathLocation, @Value("${app.kingkost.path.getimage}") String pathGetImage) {
-        try {
-            PATH_GET_IMAGE = pathGetImage;
-            Files.createDirectories(this.fileStorageLocation = Paths.get(pathLocation));
-        } catch (Exception e) {
-            throw new RuntimeException("Could not create directory");
-        }
-    }
-
+    @Value("${app.kingkost.bucket.firebase}")
+    private String BUCKET_URL;
 
     @Override
-    public String storageFile(MultipartFile file) {
-        String mimeType = file.getContentType();
-        if (mimeType == null || mimeType.startsWith("image/*")) {
-            throw new RuntimeException("Invalid upload only image");
-        }
-        try {
-            String[] arrString = file.getContentType().split("/");
-            String contentType = arrString[0] + "-" + Math.random() + '.' + arrString[1];
-            Path targetLocation = this.fileStorageLocation.resolve(contentType);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            return contentType;
-        } catch (IOException exception) {
-            throw new RuntimeException("Could not store " + file.getOriginalFilename() + "please check again " + exception);
-        }
+    public String uploadFile(MultipartFile file) throws IOException {
+        String fileName = UUID.randomUUID() + getExtention(file.getOriginalFilename());
+        BlobId blobId = BlobId.of(BUCKET_URL, fileName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("firebase-adminsdk-king-kost-forkost.json");
+        GoogleCredentials googleCredentials = GoogleCredentials.fromStream(inputStream);
+        Storage storage = StorageOptions.newBuilder().setCredentials(googleCredentials).build().getService();
+        storage.create(blobInfo, file.getBytes());
+        String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/" + BUCKET_URL + "/o/%s?alt=media";
+        return String.format(DOWNLOAD_URL, fileName);
     }
 
     @Override
-    public String getFile(String fileName) {
-        try {
-            Path pathTarget = this.fileStorageLocation.resolve(fileName).normalize();
-            return new UrlResource(pathTarget.toUri()).getFilename();
-        } catch (MalformedURLException e) {
-            return null;
-        }
+    public String getExtention(String fileName) {
+        return Path.of(fileName).getFileName().toString();
     }
 
-    public byte[] getImageStatic(String imageName) throws IOException {
-        Resource resource = new ClassPathResource(PATH_GET_IMAGE + imageName);
-        if (resource.exists()) {
-            return Files.readAllBytes(resource.getFile().toPath());
-        } else {
-            return null;
-        }
-    }
 }

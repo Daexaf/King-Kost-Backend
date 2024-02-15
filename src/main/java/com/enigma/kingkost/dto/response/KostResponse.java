@@ -30,6 +30,7 @@ public class KostResponse {
     private List<ImageResponse> images;
     private ProvinceResponse province;
     private CityResponse city;
+    private Boolean isActive;
     private SubdistrictResponse subdistrict;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

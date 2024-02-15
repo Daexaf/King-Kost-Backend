@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.webjars.NotFoundException;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +39,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class KostServiceImpl implements KostService {
     private final KostRepository kostRepository;
-    private final ImageService imageService;
+    private final ImageKostService imageKostService;
     private final FileStorageService fileStorageService;
     private final KostPriceService kostPriceService;
     private final ProvinceService provinceService;
@@ -50,6 +51,12 @@ public class KostServiceImpl implements KostService {
     @Transactional(rollbackOn = Exception.class)
     @Override
     public KostResponse createKostAndKostprice(KostRequest kostRequest) {
+        List<Kost> checkExistingKost = kostRepository.findKostBySellerId(kostRequest.getSellerId());
+        for (Kost kost : checkExistingKost) {
+            if (kost.getName().equals(kostRequest.getName()) && kost.getSubdistrict().getId().equals(kostRequest.getSubdistrictId())) {
+                throw new NullPointerException("Cannot same post kost");
+            }
+        }
         ProvinceResponse findProvince = provinceService.getProvinceById(kostRequest.getProvinceId());
         List<CityResponse> listFindCity = cityService.getByProvinceId(findProvince.getId());
         City findCity = null;
@@ -93,7 +100,7 @@ public class KostServiceImpl implements KostService {
                         .email(findSeller.getEmail())
                         .address(findSeller.getAddress())
                         .phoneNumber(findSeller.getPhoneNumber())
-                        .genderTypeId(genderTypeSeller)
+                        .genderTypeId(findSeller.getGenderTypeId())
                         .build())
                 .genderType(genderTypeKost)
                 .isAc(kostRequest.getIsAc())
@@ -109,6 +116,8 @@ public class KostServiceImpl implements KostService {
                 .city(findCity)
                 .subdistrict(findSubdistrict)
                 .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .build());
 
         KostPrice kostPrice = kostPriceService.save(KostPrice.builder()
@@ -120,15 +129,19 @@ public class KostServiceImpl implements KostService {
         List<Image> listImageSave = new ArrayList<>();
 
         Arrays.stream(kostRequest.getImage()).forEach(image -> {
-            String fileName = fileStorageService.storageFile(image);
-            Image saveImage = Image.builder()
-                    .fileName(fileName)
-                    .isActive(true)
-                    .kost(saveKost)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-            imageService.save(saveImage);
-            listImageSave.add(saveImage);
+            try {
+                String urlImage = fileStorageService.uploadFile(image);
+                Image saveImage = imageKostService.save(Image.builder()
+                        .url(urlImage)
+                        .isActive(true)
+                        .kost(saveKost)
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .build());
+                listImageSave.add(saveImage);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
         if (listImageSave.isEmpty()) {
             throw new NullPointerException("List image null");
@@ -204,7 +217,7 @@ public class KostServiceImpl implements KostService {
                     continue;
                 }
 
-                List<ImageResponse> imageList = imageService.getImageByKostId(kost.getId());
+                List<ImageResponse> imageList = imageKostService.getImageByKostId(kost.getId());
                 kostResponses.add(KostResponse.builder()
                         .id(kost.getId())
                         .name(kost.getName())
@@ -352,13 +365,14 @@ public class KostServiceImpl implements KostService {
                     .createdAt(LocalDateTime.now())
                     .build());
         }
+
         for (ImageResponse prevImage : kostRequest.getListImage()) {
             if (prevImage.getIsActive().equals(false)) {
-                imageService.deleteImage(prevImage, findKost);
+                imageKostService.deleteImage(prevImage, findKost);
             }
         }
 
-        List<ImageResponse> images = imageService.getImageByKostId(saveKost.getId());
+        List<ImageResponse> images = imageKostService.getImageByKostId(saveKost.getId());
         return KostResponse.builder()
                 .id(saveKost.getId())
                 .name(saveKost.getName())
@@ -431,25 +445,28 @@ public class KostServiceImpl implements KostService {
     public KostResponse getByIdKost(String id) {
         Kost kost = getById(id);
         KostPrice kostPrice = kostPriceService.getByKostId(kost.getId());
-        List<Image> imageList = imageService.getByKostId(kost.getId());
+        List<Image> imageList = imageKostService.getByKostId(kost.getId());
         return KostMapper.kostToKostResponse(kost, kostPrice, imageList);
     }
 
     @Override
     public void updateImageKost(UpdateImageKostRequest updateImageKostRequest) {
         Kost kost = getById(updateImageKostRequest.getKost_id());
-        String fileNameImage = null;
-        for (MultipartFile multipartFile : updateImageKostRequest.getFileImages()) {
-            fileNameImage = fileStorageService.storageFile(multipartFile);
+        for (MultipartFile fileImage : updateImageKostRequest.getFileImages()) {
+            try {
+                String urlImage = fileStorageService.uploadFile(fileImage);
+                if (urlImage == null) {
+                    throw new NullPointerException("File image null");
+                }
+                imageKostService.save(Image.builder()
+                        .url(urlImage)
+                        .kost(kost)
+                        .isActive(true)
+                        .createdAt(LocalDateTime.now())
+                        .build());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-        if (fileNameImage == null) {
-            throw new NullPointerException("File image null");
-        }
-        imageService.save(Image.builder()
-                .fileName(fileNameImage)
-                .kost(kost)
-                .isActive(true)
-                .createdAt(LocalDateTime.now())
-                .build());
     }
 }

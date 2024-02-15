@@ -156,4 +156,12 @@ public class CustomerServiceImpl implements CustomerService {
                 .build();
     }
 
+    public Customer getCustomerById(String id) {
+        Customer customer = customerRepository.findById(id).orElse(null);
+        if (customer == null) {
+            throw new NullPointerException("Customer not found");
+        }
+        return customer;
+    }
+
 }
