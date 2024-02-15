@@ -453,4 +453,50 @@ public class KostServiceImpl implements KostService {
                 .createdAt(LocalDateTime.now())
                 .build());
     }
+
+    @Override
+    public void ReduceItAvailableRoom(Kost kost) {
+        kostRepository.save(Kost.builder()
+                .id(kost.getId())
+                .name(kost.getName())
+                .description(kost.getDescription())
+                .availableRoom(kost.getAvailableRoom() - 1)
+                .seller(kost.getSeller())
+                .isWifi(kost.getIsWifi())
+                .isAc(kost.getIsAc())
+                .isParking(kost.getIsParking())
+                .genderType(kost.getGenderType())
+                .province(kost.getProvince())
+                .city(kost.getCity())
+                .subdistrict(kost.getSubdistrict())
+                .kostPrices(kost.getKostPrices())
+                .isActive(kost.getIsActive())
+                .createdAt(kost.getCreatedAt())
+                .updatedAt(kost.getUpdatedAt())
+                .build());
+    }
+
+    @Override
+    public void addAvailableRoom(Kost kost) {
+        kostRepository.save(Kost.builder()
+                .id(kost.getId())
+                .name(kost.getName())
+                .description(kost.getDescription())
+                .availableRoom(kost.getAvailableRoom() + 1)
+                .seller(kost.getSeller())
+                .isWifi(kost.getIsWifi())
+                .isAc(kost.getIsAc())
+                .isParking(kost.getIsParking())
+                .genderType(kost.getGenderType())
+                .province(kost.getProvince())
+                .city(kost.getCity())
+                .subdistrict(kost.getSubdistrict())
+                .kostPrices(kost.getKostPrices())
+                .isActive(kost.getIsActive())
+                .createdAt(kost.getCreatedAt())
+                .updatedAt(kost.getUpdatedAt())
+                .build());
+    }
+
+
 }

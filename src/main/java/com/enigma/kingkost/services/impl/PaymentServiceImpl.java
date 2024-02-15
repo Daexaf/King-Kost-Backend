@@ -25,7 +25,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentType getById(String id) {
         PaymentType payment = paymentRepository.findById(id).orElse(null);
-        assert payment != null;
+        if (payment == null) {
+            throw new NullPointerException("Payment type not found");
+        }
         return payment;
     }
 

@@ -2,7 +2,6 @@ package com.enigma.kingkost.services.impl;
 
 import com.enigma.kingkost.dto.request.TransactionKostRequest;
 import com.enigma.kingkost.dto.response.CustomerResponse;
-import com.enigma.kingkost.dto.response.KostResponse;
 import com.enigma.kingkost.entities.*;
 import com.enigma.kingkost.repositories.TransactionKostRepository;
 import com.enigma.kingkost.services.*;
@@ -25,12 +24,12 @@ public class TransactionKostServiceImpl implements TransactionKostService {
     @Transactional(rollbackOn = Exception.class)
     @Override
     public TransactionKost create(TransactionKostRequest transactionKostRequest) {
-        KostResponse findKost = kostService.getByIdKost(transactionKostRequest.getKostId());
+        Kost findKost = kostService.getById(transactionKostRequest.getKostId());
+        kostService.ReduceItAvailableRoom(findKost);
         CustomerResponse findCustomer = customerService.getById(transactionKostRequest.getCustomerId());
         MonthType monthType = monthService.getById(transactionKostRequest.getMonthTypeId());
         PaymentType paymentType = paymentService.getById(transactionKostRequest.getPaymentTypeId());
-
-       TransactionKost transactionKost = transactionKostRepository.save(TransactionKost.builder()
+        TransactionKost transactionKost = transactionKostRepository.save(TransactionKost.builder()
                 .kost(Kost.builder()
                         .id(findKost.getId())
                         .build())
@@ -70,6 +69,36 @@ public class TransactionKostServiceImpl implements TransactionKostService {
     @Override
     public TransactionKost update(TransactionKost transactionKost) {
         return transactionKostRepository.save(transactionKost);
+    }
+
+    @Override
+    public void cancelTransactionKost(String customerId, String transactionId) {
+        TransactionKost findTransaction = getById(transactionId);
+        CustomerResponse findCustomer = customerService.getById(customerId);
+        kostService.addAvailableRoom(findTransaction.getKost());
+        if (!findTransaction.getCustomer().getId().equals(findCustomer.getId())) {
+            throw new NullPointerException("Cannot cancel transaction");
+        }
+        if (findTransaction.getAprStatus() > 0) {
+            throw new NullPointerException("Transaction was cancel");
+        }
+        transactionKostRepository.save(TransactionKost.builder()
+                .id(findTransaction.getId())
+                .kost(findTransaction.getKost())
+                .customer(Customer.builder()
+                        .id(findCustomer.getId())
+                        .fullName(findCustomer.getFullName())
+                        .email(findCustomer.getEmail())
+                        .genderTypeId(findCustomer.getGenderTypeId())
+                        .phoneNumber(findCustomer.getPhoneNumber())
+                        .address(findCustomer.getAddress())
+                        .build())
+                .monthType(findTransaction.getMonthType())
+                .paymentType(findTransaction.getPaymentType())
+                .aprStatus(1)
+                .createdAt(findTransaction.getCreatedAt())
+                .updatedAt(LocalDateTime.now())
+                .build());
     }
 
 }

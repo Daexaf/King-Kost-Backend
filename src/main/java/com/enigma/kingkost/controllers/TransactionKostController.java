@@ -3,6 +3,7 @@ package com.enigma.kingkost.controllers;
 import com.enigma.kingkost.constant.AppPath;
 import com.enigma.kingkost.dto.request.TransactionKostRequest;
 import com.enigma.kingkost.dto.response.CommondResponse;
+import com.enigma.kingkost.dto.response.CommondResponseNoData;
 import com.enigma.kingkost.entities.TransactionKost;
 import com.enigma.kingkost.services.TransactionKostService;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,15 @@ public class TransactionKostController {
                 .statusCode(HttpStatus.OK.value())
                 .message("Success get transaction")
                 .data(transactionKost)
+                .build());
+    }
+
+    @PostMapping(AppPath.VALUE_CANCEL)
+    public ResponseEntity<CommondResponseNoData> cancelTransaction(@RequestParam("transactionId") String transactionId, @RequestParam("customerId") String customerId) {
+        transactionKostService.cancelTransactionKost(customerId, transactionId);
+        return ResponseEntity.status(HttpStatus.OK).body(CommondResponseNoData.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success cancel transaction")
                 .build());
     }
 }

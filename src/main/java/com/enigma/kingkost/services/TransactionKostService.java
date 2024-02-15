@@ -11,4 +11,5 @@ public interface TransactionKostService {
     List<TransactionKost> getByCustomerId(String customerId);
     TransactionKost getById(String id);
     TransactionKost update(TransactionKost transactionKost);
+    void cancelTransactionKost(String customerId, String transactionId);
 }
