@@ -18,4 +18,5 @@ public class GetAllRequest {
     private Integer page;
     private Integer size;
     private Double maxPrice;
+    private String sellerId;
 }
