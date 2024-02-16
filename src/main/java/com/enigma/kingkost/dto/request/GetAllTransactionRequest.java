@@ -9,13 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class EmailRequest {
-    String emailTo;
-    String subject;
-    String sellerName;
-    String customerName;
-    String customerEmail;
-    String phoneCustomer;
-    String bookingDate;
-    String statusBooking;
+public class GetAllTransactionRequest {
+    private Integer page;
+    private Integer size;
+    private String sellerId;
+    private String customerId;
+    private Integer aprovStatus;
 }

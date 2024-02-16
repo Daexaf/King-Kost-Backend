@@ -1,10 +1,12 @@
 package com.enigma.kingkost.services.impl;
 
-import com.enigma.kingkost.dto.request.EmailRequest;
+import com.enigma.kingkost.constant.EStatus;
+import com.enigma.kingkost.dto.request.EmailRequestSeller;
 import com.enigma.kingkost.entities.TransactionKost;
 import com.enigma.kingkost.services.ApprovalService;
 import com.enigma.kingkost.services.EmailService;
 import com.enigma.kingkost.services.TransactionKostService;
+import com.enigma.kingkost.util.DateFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,9 +38,17 @@ public class ApprovalServiceImpl implements ApprovalService {
                 .updatedAt(LocalDateTime.now())
                 .build());
 
-        emailService.sendHtmlEmail(EmailRequest.builder()
-                        .emailTo(transactionKost.getKost().getSeller().getEmail())
-                        .subject("King Kost Booking Notification")
+        emailService.sendHtmlEmailForSeller(EmailRequestSeller.builder()
+                .emailTo(transactionKost.getKost().getSeller().getEmail())
+                .subject("King Kost Booking Notification")
+                .kostName(transactionKost.getKost().getName())
+                .sellerName(transactionKost.getKost().getSeller().getFullName())
+                .customerName(transactionKost.getCustomer().getFullName())
+                .customerEmail(transactionKost.getCustomer().getEmail())
+                .phoneCustomer(transactionKost.getCustomer().getPhoneNumber())
+                .bookingDate(DateFormat.dateStringFormat(transactionKost.getCreatedAt()))
+                .updateBookingDate(DateFormat.dateStringFormat(transactionKost.getUpdatedAt()))
+                .statusBooking(String.valueOf(EStatus.values()[transactionKost.getAprStatus()]))
                 .build());
     }
 

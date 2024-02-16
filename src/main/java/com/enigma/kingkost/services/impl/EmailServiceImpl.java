@@ -1,7 +1,8 @@
 package com.enigma.kingkost.services.impl;
 
 import com.enigma.kingkost.constant.HtmlContent;
-import com.enigma.kingkost.dto.request.EmailRequest;
+import com.enigma.kingkost.dto.request.EmailRequestCustomer;
+import com.enigma.kingkost.dto.request.EmailRequestSeller;
 import com.enigma.kingkost.services.EmailService;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -20,14 +21,30 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendHtmlEmail(EmailRequest emailRequest) {
-        String htmlContent = HtmlContent.HTML_CONTENT_SELLER.replace("[Nama Seller]", emailRequest.getSellerName()).replace("[Nama Pemesan]", emailRequest.getCustomerName()).replace("[Email Pemesan]", emailRequest.getCustomerEmail()).replace("[Nomor Telepon Pemesan]", emailRequest.getPhoneCustomer()).replace("[Tanggal Pemesan]", emailRequest.getBookingDate()).replace("[Status Pemesan]", emailRequest.getStatusBooking());
+    public void sendHtmlEmailForSeller(EmailRequestSeller emailRequestSeller) {
+        String htmlContent = HtmlContent.HTML_CONTENT_SELLER.replace("[Nama Seller]", emailRequestSeller.getSellerName()).replace("[Nama Kost]", emailRequestSeller.getKostName()).replace("[Nama Pemesan]", emailRequestSeller.getCustomerName()).replace("[Email Pemesan]", emailRequestSeller.getCustomerEmail()).replace("[Nomor Telepon Pemesan]", emailRequestSeller.getPhoneCustomer()).replace("[Tanggal Pemesan]", emailRequestSeller.getBookingDate()).replace("[Tanggal Update Pemesan]", emailRequestSeller.getUpdateBookingDate()).replace("[Status Pemesan]", emailRequestSeller.getStatusBooking());
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
             message.setFrom(new InternetAddress("truecuks19@gmail.com"));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailRequest.getEmailTo()));
-            message.setSubject(emailRequest.getSubject());
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailRequestSeller.getEmailTo()));
+            message.setSubject(emailRequestSeller.getSubject());
+            message.setContent(htmlContent, "text/html; charset=utf-8");
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public void sendHtmlEmailForCustomer(EmailRequestCustomer emailRequestCustomer) {
+        String htmlContent = HtmlContent.HTML_CONTENT_CUSTOMER.replace("[Nama Customer]", emailRequestCustomer.getCustomerName()).replace("[Nama Kost]", emailRequestCustomer.getKostName()).replace("[Nama Pemilik Kost]", emailRequestCustomer.getSellerName()).replace("[Email Pemilik Kost]", emailRequestCustomer.getEmailSeller()).replace("[Nomor Telepon Pemilik Kost]", emailRequestCustomer.getNoPhoneSeller()).replace("[Tanggal Pemesan]", emailRequestCustomer.getBookingDate()).replace("[Status Pemesan]", emailRequestCustomer.getStatusBooking());
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            message.setFrom(new InternetAddress("truecuks19@gmail.com"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailRequestCustomer.getEmailTo()));
+            message.setSubject(emailRequestCustomer.getSubject());
             message.setContent(htmlContent, "text/html; charset=utf-8");
             mailSender.send(message);
         } catch (MessagingException e) {
