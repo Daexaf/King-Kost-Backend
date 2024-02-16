@@ -1,7 +1,9 @@
 package com.enigma.kingkost.services.impl;
 
+import com.enigma.kingkost.dto.request.EmailRequest;
 import com.enigma.kingkost.entities.TransactionKost;
 import com.enigma.kingkost.services.ApprovalService;
+import com.enigma.kingkost.services.EmailService;
 import com.enigma.kingkost.services.TransactionKostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class ApprovalServiceImpl implements ApprovalService {
     private final TransactionKostService transactionKostService;
+    private final EmailService emailService;
 
     @Override
     public void approveTransactionKost(String transactionId, Integer approve, String sellerId) {
@@ -22,7 +25,7 @@ public class ApprovalServiceImpl implements ApprovalService {
         if (!findTransactionKost.getKost().getSeller().getId().equals(sellerId)) {
             throw new NullPointerException("Cannont approve transaction");
         }
-        transactionKostService.update(TransactionKost.builder()
+        TransactionKost transactionKost = transactionKostService.update(TransactionKost.builder()
                 .id(findTransactionKost.getId())
                 .kost(findTransactionKost.getKost())
                 .customer(findTransactionKost.getCustomer())
@@ -31,6 +34,11 @@ public class ApprovalServiceImpl implements ApprovalService {
                 .aprStatus(approve)
                 .createdAt(findTransactionKost.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
+                .build());
+
+        emailService.sendHtmlEmail(EmailRequest.builder()
+                        .emailTo(transactionKost.getKost().getSeller().getEmail())
+                        .subject("King Kost Booking Notification")
                 .build());
     }
 

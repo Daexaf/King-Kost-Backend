@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface TransactionKostRepository extends JpaRepository<TransactionKost, String> {
     TransactionKost findByKostSellerIdAndAprStatusLessThan(String sellerId, Integer approv);
-    List<TransactionKost> findByCustomerId(String customerId);
-    List<TransactionKost> findByKostSellerId(String sellerId);
+    List<TransactionKost> findByCustomerIdOrderByCreatedAtDesc(String customerId);
+    List<TransactionKost> findByKostSellerIdOrderByCreatedAtDesc(String sellerId);
 }

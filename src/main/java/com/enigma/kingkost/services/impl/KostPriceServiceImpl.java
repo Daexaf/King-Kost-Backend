@@ -53,7 +53,6 @@ public class KostPriceServiceImpl implements KostPriceService {
         if (kostPrice == null) {
             throw new NotFoundException("Kost price with kost id " + kostId + " not found");
         }
-
         return kostPrice;
     }
 }

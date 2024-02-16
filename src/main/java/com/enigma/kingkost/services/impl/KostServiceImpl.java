@@ -182,9 +182,12 @@ public class KostServiceImpl implements KostService {
             Join<Kost, City> kostCityJoin = root.join("city");
             Join<Kost, Subdistrict> kostSubdistrictJoin = root.join("subdistrict");
             Join<Kost, GenderType> kostGenderTypeJoin = root.join("genderType");
+            Join<Kost, Seller> kostSellerJoin = root.join("seller");
 
             List<Predicate> predicates = new ArrayList<>();
-
+            if (getAllRequest.getSellerId() != null) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(kostSellerJoin.get("id")), '%' + getAllRequest.getSellerId().toLowerCase() + '%'));
+            }
             if (getAllRequest.getName() != null) {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), '%' + getAllRequest.getName().toLowerCase() + '%'));
             }
@@ -513,6 +516,5 @@ public class KostServiceImpl implements KostService {
                 .updatedAt(kost.getUpdatedAt())
                 .build());
     }
-
 
 }
