@@ -23,4 +23,5 @@ public interface CustomerService {
     CustomerResponse addOrUpdateProfileImageForCustomer(String customerId, MultipartFile profileImage) throws IOException;
 
     CustomerResponse getCustomerByUserCredentialId(String userCredentialId);
+
 }

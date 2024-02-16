@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface SellerRepository extends JpaRepository<Seller, String> {
     Optional<Seller> findByUserCredentialId(String userCredentialId);
+
+    Optional<Seller> findByEmail(String email);
 }

@@ -28,6 +28,7 @@ public class CustomerRequest {
     private String username;
     @NotBlank(message = "password is required")
     private String password;
+    private boolean active;
 
     private String profileImageName;
     private String profileImageType;

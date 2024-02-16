@@ -9,13 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class EmailRequest {
-    String emailTo;
-    String subject;
-    String sellerName;
-    String customerName;
-    String customerEmail;
-    String phoneCustomer;
-    String bookingDate;
-    String statusBooking;
+public class ForgotPasswordRequest {
+    private String email;
 }

@@ -22,11 +22,6 @@ import java.util.List;
 public class CustomerController {
     private final CustomerService customerService;
 
-//    @PostMapping("/v1")
-//    public CustomerResponse createCust(Cus customerRequest) {
-//        return customerService.createCustomer(customerRequest);
-//    }
-
     @GetMapping("/v1")
     public List<CustomerResponse> getAll() {
         return customerService.getAllCustomers();

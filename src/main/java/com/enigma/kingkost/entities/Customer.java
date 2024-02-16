@@ -29,6 +29,7 @@ public class Customer {
     private String profileImageName;
     private String profileImageType;
     private String url;
+    private boolean active = false;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

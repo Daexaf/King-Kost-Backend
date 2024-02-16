@@ -7,10 +7,8 @@ import com.enigma.kingkost.entities.GenderType;
 import com.enigma.kingkost.entities.ImagesProfile;
 import com.enigma.kingkost.entities.UserCredential;
 import com.enigma.kingkost.repositories.CustomerRepository;
-import com.enigma.kingkost.services.CustomerService;
-import com.enigma.kingkost.services.GenderService;
-import com.enigma.kingkost.services.ImagesProfileService;
-import com.enigma.kingkost.services.UserService;
+import com.enigma.kingkost.repositories.UserCredentialRepository;
+import com.enigma.kingkost.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +26,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final ImagesProfileService imagesProfileService;
+    private final UserCredentialRepository userCredentialRepository;
 
     @Override
     public CustomerResponse createCustomer(Customer customerRequest) {
@@ -65,7 +64,7 @@ public class CustomerServiceImpl implements CustomerService {
             currentCustomerId.setPhoneNumber(customerRequest.getPhoneNumber());
             currentCustomerId.setGenderTypeId(gender);
             currentCustomerId.setUserCredential(userCredential);
-
+            currentCustomerId.setActive(customerRequest.isActive());
             customerRepository.save(currentCustomerId);
 
             return getCustomerResponse(currentCustomerId);
@@ -115,6 +114,10 @@ public class CustomerServiceImpl implements CustomerService {
         if (findCustomer == null) {
             throw new NullPointerException("Customer not found");
         }
+
+        UserCredential userCredential = findCustomer.getUserCredential();
+        String username = (userCredential != null) ? userCredential.getUsername() : null;
+
         return CustomerResponse.builder()
                 .id(findCustomer.getId())
                 .address(findCustomer.getAddress())
@@ -125,8 +128,11 @@ public class CustomerServiceImpl implements CustomerService {
                 .email(findCustomer.getEmail())
                 .genderTypeId(findCustomer.getGenderTypeId())
                 .fullName(findCustomer.getFullName())
+                .username(username)
+                .active(findCustomer.isActive())
                 .build();
     }
+
 
     private CustomerResponse convertToResponse(Customer customer) {
         return CustomerResponse.builder()
@@ -139,13 +145,16 @@ public class CustomerServiceImpl implements CustomerService {
                 .profileImageName(customer.getProfileImageName())
                 .profileImageType(customer.getProfileImageType())
                 .url(customer.getUrl())
+                .active(customer.isActive())
                 .build();
     }
 
     private CustomerResponse getCustomerResponse(Customer customer) {
+        UserCredential userCredential = customer.getUserCredential();
         return CustomerResponse.builder()
                 .id(customer.getId())
                 .fullName(customer.getFullName())
+                .username(userCredential != null ? userCredential.getUsername() : null)
                 .email(customer.getEmail())
                 .genderTypeId(customer.getGenderTypeId())
                 .phoneNumber(customer.getPhoneNumber())
@@ -153,6 +162,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .profileImageName(customer.getProfileImageName())
                 .profileImageType(customer.getProfileImageType())
                 .url(customer.getUrl())
+                .active(customer.isActive())
                 .build();
     }
 
