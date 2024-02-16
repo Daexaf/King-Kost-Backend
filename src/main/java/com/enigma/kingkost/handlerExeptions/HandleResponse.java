@@ -55,4 +55,13 @@ public class HandleResponse {
                 .message(nullPointerException.getMessage())
                 .build();
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(Exception.class)
+    public HandleExeptionResponse handleExeptionResponsee(Exception e) {
+        return HandleExeptionResponse.builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message(e.getMessage())
+                .build();
+    }
 }
