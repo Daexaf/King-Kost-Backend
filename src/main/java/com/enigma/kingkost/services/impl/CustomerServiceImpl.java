@@ -7,11 +7,10 @@ import com.enigma.kingkost.entities.GenderType;
 import com.enigma.kingkost.entities.ImagesProfile;
 import com.enigma.kingkost.entities.UserCredential;
 import com.enigma.kingkost.repositories.CustomerRepository;
-import com.enigma.kingkost.services.CustomerService;
-import com.enigma.kingkost.services.GenderService;
-import com.enigma.kingkost.services.ImagesProfileService;
-import com.enigma.kingkost.services.UserService;
+import com.enigma.kingkost.repositories.UserCredentialRepository;
+import com.enigma.kingkost.services.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final ImagesProfileService imagesProfileService;
+    private final UserCredentialRepository userCredentialRepository;
 
     @Override
     public CustomerResponse createCustomer(Customer customerRequest) {
@@ -115,6 +115,10 @@ public class CustomerServiceImpl implements CustomerService {
         if (findCustomer == null) {
             throw new NullPointerException("Customer not found");
         }
+
+        UserCredential userCredential = findCustomer.getUserCredential();
+        String username = (userCredential != null) ? userCredential.getUsername() : null;
+
         return CustomerResponse.builder()
                 .id(findCustomer.getId())
                 .address(findCustomer.getAddress())
@@ -125,7 +129,39 @@ public class CustomerServiceImpl implements CustomerService {
                 .email(findCustomer.getEmail())
                 .genderTypeId(findCustomer.getGenderTypeId())
                 .fullName(findCustomer.getFullName())
+                .username(username)
                 .build();
+    }
+
+    @Override
+    public void resetPassword(String email) {
+        Customer customer = customerRepository.findByEmail(email).orElse(null);
+
+        if (customer != null) {
+            UserCredential userCredential = customer.getUserCredential();
+            if (userCredential != null) {
+                String newPassword = generateRandomPassword();
+                userCredential.setPassword(passwordEncoder.encode(newPassword));
+                userService.updateUserCredential(userCredential);
+                sendPasswordResetEmail(customer.getEmail(), newPassword);
+            } else {
+                throw new RuntimeException("UserCredential not found for the customer: " + customer.getId());
+            }
+        } else {
+            throw new RuntimeException("Customer not found for username or email: " + email);
+        }
+    }
+
+    private void sendPasswordResetEmail(String toEmail, String newPassword) {
+        String subject = "Password Reset";
+        String messageBody = "Your new password is: " + newPassword;
+
+        EmailSender.sendEmail(toEmail, subject, messageBody);
+    }
+
+    @Override
+    public String generateRandomPassword() {
+        return RandomStringUtils.randomAlphanumeric(10);
     }
 
     private CustomerResponse convertToResponse(Customer customer) {
@@ -143,9 +179,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private CustomerResponse getCustomerResponse(Customer customer) {
+        UserCredential userCredential = customer.getUserCredential();
         return CustomerResponse.builder()
                 .id(customer.getId())
                 .fullName(customer.getFullName())
+                .username(userCredential != null ? userCredential.getUsername() : null)
                 .email(customer.getEmail())
                 .genderTypeId(customer.getGenderTypeId())
                 .phoneNumber(customer.getPhoneNumber())

@@ -1,5 +1,6 @@
 package com.enigma.kingkost.dto.response;
 
+import com.enigma.kingkost.entities.Customer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class ReviewResponse {
     private String id;
     private String message;
-    private String customerId;
+    private Customer customerId;
 }
