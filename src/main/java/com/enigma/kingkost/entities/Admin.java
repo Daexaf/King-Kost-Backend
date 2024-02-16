@@ -19,6 +19,7 @@ public class Admin {
     private String username;
     private String password;
     private String roleTypeId;
+    private boolean active = false;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

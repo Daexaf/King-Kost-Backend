@@ -24,8 +24,4 @@ public interface CustomerService {
 
     CustomerResponse getCustomerByUserCredentialId(String userCredentialId);
 
-    void resetPassword(String usernameOrEmail);
-
-    String generateRandomPassword();
-
 }

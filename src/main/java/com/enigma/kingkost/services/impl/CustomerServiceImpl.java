@@ -10,7 +10,6 @@ import com.enigma.kingkost.repositories.CustomerRepository;
 import com.enigma.kingkost.repositories.UserCredentialRepository;
 import com.enigma.kingkost.services.*;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,7 +64,7 @@ public class CustomerServiceImpl implements CustomerService {
             currentCustomerId.setPhoneNumber(customerRequest.getPhoneNumber());
             currentCustomerId.setGenderTypeId(gender);
             currentCustomerId.setUserCredential(userCredential);
-
+            currentCustomerId.setActive(customerRequest.isActive());
             customerRepository.save(currentCustomerId);
 
             return getCustomerResponse(currentCustomerId);
@@ -130,39 +129,10 @@ public class CustomerServiceImpl implements CustomerService {
                 .genderTypeId(findCustomer.getGenderTypeId())
                 .fullName(findCustomer.getFullName())
                 .username(username)
+                .active(findCustomer.isActive())
                 .build();
     }
 
-    @Override
-    public void resetPassword(String email) {
-        Customer customer = customerRepository.findByEmail(email).orElse(null);
-
-        if (customer != null) {
-            UserCredential userCredential = customer.getUserCredential();
-            if (userCredential != null) {
-                String newPassword = generateRandomPassword();
-                userCredential.setPassword(passwordEncoder.encode(newPassword));
-                userService.updateUserCredential(userCredential);
-                sendPasswordResetEmail(customer.getEmail(), newPassword);
-            } else {
-                throw new RuntimeException("UserCredential not found for the customer: " + customer.getId());
-            }
-        } else {
-            throw new RuntimeException("Customer not found for username or email: " + email);
-        }
-    }
-
-    private void sendPasswordResetEmail(String toEmail, String newPassword) {
-        String subject = "Password Reset";
-        String messageBody = "Your new password is: " + newPassword;
-
-        EmailSender.sendEmail(toEmail, subject, messageBody);
-    }
-
-    @Override
-    public String generateRandomPassword() {
-        return RandomStringUtils.randomAlphanumeric(10);
-    }
 
     private CustomerResponse convertToResponse(Customer customer) {
         return CustomerResponse.builder()
@@ -175,6 +145,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .profileImageName(customer.getProfileImageName())
                 .profileImageType(customer.getProfileImageType())
                 .url(customer.getUrl())
+                .active(customer.isActive())
                 .build();
     }
 
@@ -191,6 +162,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .profileImageName(customer.getProfileImageName())
                 .profileImageType(customer.getProfileImageType())
                 .url(customer.getUrl())
+                .active(customer.isActive())
                 .build();
     }
 

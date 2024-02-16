@@ -77,7 +77,7 @@ public class ReviewServiceImpl implements ReviewService {
         return ReviewResponse.builder()
                 .id(review.getId())
                 .message(review.getMessage())
-                .customerId(review.getCustomerId().getId())
+                .customerId(review.getCustomerId())
                 .build();
     }
 }

@@ -46,6 +46,7 @@ public class AdminServiceImpl implements AdminService {
 
             currentAdmin.setRoleTypeId(adminRequest.getRoleTypeId());
             currentAdmin.setCreatedAt(createdAt);
+            currentAdmin.setActive(adminRequest.isActive());
             adminRepository.save(currentAdmin);
             return getAdminResponse(currentAdmin);
         }
@@ -76,6 +77,7 @@ public class AdminServiceImpl implements AdminService {
                 .id(admin.getId())
                 .username(admin.getUsername())
                 .roleTypeId(admin.getRoleTypeId())
+                .active(admin.isActive())
                 .build();
     }
 }

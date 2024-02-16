@@ -51,9 +51,7 @@ public class SellerServiceImpl implements SellerService {
             }
             userCredential.setUsername(sellerRequest.getUsername());
             userCredential.setPassword(passwordEncoder.encode(sellerRequest.getPassword()));
-
             userService.updateUserCredential(userCredential);
-
             GenderType gender = genderService.getById(sellerRequest.getGenderTypeId());
             currentSellerId.setFullName(sellerRequest.getFullName());
             currentSellerId.setAddress(sellerRequest.getAddress());
@@ -132,6 +130,7 @@ public class SellerServiceImpl implements SellerService {
                 .profileImageType(findSeller.getProfileImageType())
                 .profileImageName(findSeller.getProfileImageName())
                 .fullName(findSeller.getFullName())
+                .active(findSeller.isActive())
                 .build();
     }
 
@@ -146,6 +145,7 @@ public class SellerServiceImpl implements SellerService {
                 .profileImageName(seller.getProfileImageName())
                 .profileImageType(seller.getProfileImageType())
                 .url(seller.getUrl())
+                .active(seller.isActive())
                 .build();
     }
 
@@ -160,6 +160,7 @@ public class SellerServiceImpl implements SellerService {
                 .profileImageType(seller.getProfileImageType())
                 .profileImageName(seller.getProfileImageName())
                 .url(seller.getUrl())
+                .active(seller.isActive())
                 .build();
     }
 

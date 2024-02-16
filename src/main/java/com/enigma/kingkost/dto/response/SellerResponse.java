@@ -20,4 +20,5 @@ public class SellerResponse {
     private String profileImageName;
     private String profileImageType;
     private String url;
+    private boolean active;
 }
