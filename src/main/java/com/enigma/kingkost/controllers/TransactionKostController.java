@@ -1,12 +1,16 @@
 package com.enigma.kingkost.controllers;
 
 import com.enigma.kingkost.constant.AppPath;
+import com.enigma.kingkost.dto.request.GetAllTransactionRequest;
 import com.enigma.kingkost.dto.request.TransactionKostRequest;
 import com.enigma.kingkost.dto.response.CommondResponse;
 import com.enigma.kingkost.dto.response.CommondResponseNoData;
+import com.enigma.kingkost.dto.response.CommondResponseWithPagging;
+import com.enigma.kingkost.dto.response.PaggingResponse;
 import com.enigma.kingkost.entities.TransactionKost;
 import com.enigma.kingkost.services.TransactionKostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,23 +33,26 @@ public class TransactionKostController {
                 .build());
     }
 
-    @GetMapping(value = AppPath.CUSTOMER + AppPath.VALUE_ID)
-    public ResponseEntity<CommondResponse> getTransactionByCustomerId(@PathVariable String id) {
-        List<TransactionKost> transactionKosts = transactionKostService.getByCustomerId(id);
-        return ResponseEntity.status(HttpStatus.OK).body(CommondResponse.builder()
-                .statusCode(HttpStatus.OK.value())
-                .message("Success get transaction")
-                .data(transactionKosts)
+    @GetMapping
+    public ResponseEntity<CommondResponseWithPagging> getAllTransactionWithManyRequest(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page, @RequestParam(name = "size", required = false, defaultValue = "5") Integer size, @RequestParam(name = "customerId", required = false) String customerId, @RequestParam(name = "sellerId", required = false) String sellerId, @RequestParam(name = "approveStatus", required = false) Integer approveStatus) {
+        Page<TransactionKost> transactionKosts = transactionKostService.getAllTransaction(GetAllTransactionRequest.builder()
+                .page(page)
+                .size(size)
+                .customerId(customerId)
+                .sellerId(sellerId)
+                .aprovStatus(approveStatus)
                 .build());
-    }
+        PaggingResponse paggingResponse = PaggingResponse.builder()
+                .currentPage(page)
+                .size(size)
+                .totalPage(transactionKosts.getTotalPages())
+                .build();
 
-    @GetMapping(AppPath.SELLER + AppPath.VALUE_ID)
-    public ResponseEntity<CommondResponse> getBySellerId(@PathVariable String id) {
-        List<TransactionKost> transactionKostList = transactionKostService.getBySellerId(id);
-        return ResponseEntity.status(HttpStatus.OK).body(CommondResponse.builder()
+        return ResponseEntity.status(HttpStatus.OK).body(CommondResponseWithPagging.builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get transaction")
-                .data(transactionKostList)
+                .message("Success get all transaction")
+                .data(transactionKosts.getContent())
+                .paggingResponse(paggingResponse)
                 .build());
     }
 

@@ -1,19 +1,30 @@
 package com.enigma.kingkost.services.impl;
 
 import com.enigma.kingkost.constant.EStatus;
-import com.enigma.kingkost.dto.request.EmailRequest;
+import com.enigma.kingkost.dto.request.EmailRequestCustomer;
+import com.enigma.kingkost.dto.request.EmailRequestSeller;
+import com.enigma.kingkost.dto.request.GetAllTransactionRequest;
 import com.enigma.kingkost.dto.request.TransactionKostRequest;
 import com.enigma.kingkost.dto.response.CustomerResponse;
 import com.enigma.kingkost.entities.*;
 import com.enigma.kingkost.repositories.TransactionKostRepository;
 import com.enigma.kingkost.services.*;
 import com.enigma.kingkost.util.DateFormat;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -54,27 +65,57 @@ public class TransactionKostServiceImpl implements TransactionKostService {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build());
-        emailService.sendHtmlEmail(EmailRequest.builder()
+        emailService.sendHtmlEmailForSeller(EmailRequestSeller.builder()
                 .emailTo(findKost.getSeller().getEmail())
                 .subject("King Kost Booking Notification")
+                .kostName(findKost.getName())
                 .sellerName(findKost.getSeller().getFullName())
                 .customerName(findCustomer.getFullName())
                 .customerEmail(findCustomer.getEmail())
                 .phoneCustomer(findCustomer.getPhoneNumber())
+                .bookingDate(DateFormat.dateStringFormat(transactionKost.getCreatedAt()))
+                .updateBookingDate(DateFormat.dateStringFormat(transactionKost.getCreatedAt()))
+                .statusBooking(String.valueOf(EStatus.values()[transactionKost.getAprStatus()]))
+                .build());
+        emailService.sendHtmlEmailForCustomer(EmailRequestCustomer.builder()
+                .emailTo(transactionKost.getCustomer().getEmail())
+                .subject("King Kost Booking Notification")
+                .customerName(transactionKost.getCustomer().getFullName())
+                .kostName(findKost.getName())
+                .sellerName(findKost.getSeller().getFullName())
+                .emailSeller(findKost.getSeller().getEmail())
+                .noPhoneSeller(findKost.getSeller().getPhoneNumber())
                 .bookingDate(DateFormat.dateStringFormatNow())
+                .updateBookingDate(DateFormat.dateStringFormat(transactionKost.getCreatedAt()))
                 .statusBooking(String.valueOf(EStatus.values()[transactionKost.getAprStatus()]))
                 .build());
         return transactionKost;
     }
 
     @Override
-    public List<TransactionKost> getBySellerId(String sellerId) {
-        return transactionKostRepository.findByKostSellerIdOrderByCreatedAtDesc(sellerId);
-    }
-
-    @Override
-    public List<TransactionKost> getByCustomerId(String customerId) {
-        return transactionKostRepository.findByCustomerIdOrderByCreatedAtDesc(customerId);
+    public Page<TransactionKost> getAllTransaction(GetAllTransactionRequest getAllTransactionRequest) {
+        Specification<TransactionKost> specification = ((root, query, criteriaBuilder) -> {
+            Join<TransactionKost, Kost> kostJoin = root.join("kost");
+            Join<TransactionKost, Customer> customerJoin = root.join("customer");
+            List<Predicate> predicates = new ArrayList<>();
+            if (getAllTransactionRequest.getAprovStatus() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("aprStatus"), getAllTransactionRequest.getAprovStatus()));
+            }
+            if (getAllTransactionRequest.getSellerId() != null) {
+                predicates.add(criteriaBuilder.equal(kostJoin.get("seller").get("id"), getAllTransactionRequest.getSellerId()));
+            }
+            if (getAllTransactionRequest.getCustomerId() != null) {
+                predicates.add(criteriaBuilder.equal(customerJoin.get("id"), getAllTransactionRequest.getCustomerId()));
+            }
+            return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+        });
+        Pageable pageable = PageRequest.of(getAllTransactionRequest.getPage(), getAllTransactionRequest.getSize());
+        Page<TransactionKost> transactionKosts = transactionKostRepository.findAll(specification, pageable);
+        List<TransactionKost> transactionKostListResponse = new ArrayList<>();
+        for (TransactionKost transactionKost : transactionKosts.getContent()) {
+            transactionKostListResponse.add(transactionKost);
+        }
+        return new PageImpl<>(transactionKostListResponse, pageable, transactionKosts.getTotalElements());
     }
 
     @Override
@@ -120,24 +161,28 @@ public class TransactionKostServiceImpl implements TransactionKostService {
                 .updatedAt(LocalDateTime.now())
                 .build());
 
-        emailService.sendHtmlEmail(EmailRequest.builder()
+        emailService.sendHtmlEmailForSeller(EmailRequestSeller.builder()
                 .emailTo(transactionKost.getKost().getSeller().getEmail())
-                .subject("Pembatalan pemesanan kost")
+                .subject("King Kost Booking Notification")
+                .kostName(transactionKost.getKost().getName())
                 .sellerName(transactionKost.getKost().getSeller().getFullName())
-                .customerName(transactionKost.getCustomer().getFullName())
-                .customerEmail(transactionKost.getCustomer().getEmail())
-                .phoneCustomer(transactionKost.getCustomer().getPhoneNumber())
-                .bookingDate(DateFormat.dateStringFormatNow())
+                .customerName(findCustomer.getFullName())
+                .customerEmail(findCustomer.getEmail())
+                .phoneCustomer(findCustomer.getPhoneNumber())
+                .bookingDate(DateFormat.dateStringFormat(transactionKost.getCreatedAt()))
+                .updateBookingDate(DateFormat.dateStringFormat(transactionKost.getUpdatedAt()))
                 .statusBooking(String.valueOf(EStatus.values()[transactionKost.getAprStatus()]))
                 .build());
-        emailService.sendHtmlEmail(EmailRequest.builder()
-                .emailTo(transactionKost.getKost().getSeller().getEmail())
-                .subject("Pembatalan pemesanan kost")
-                .sellerName(transactionKost.getKost().getSeller().getFullName())
+        emailService.sendHtmlEmailForCustomer(EmailRequestCustomer.builder()
+                .emailTo(transactionKost.getCustomer().getEmail())
+                .subject("King Kost Booking Notification")
                 .customerName(transactionKost.getCustomer().getFullName())
-                .customerEmail(transactionKost.getCustomer().getEmail())
-                .phoneCustomer(transactionKost.getCustomer().getPhoneNumber())
+                .kostName(transactionKost.getKost().getName())
+                .sellerName(transactionKost.getKost().getSeller().getFullName())
+                .emailSeller(transactionKost.getKost().getSeller().getEmail())
+                .noPhoneSeller(transactionKost.getKost().getSeller().getPhoneNumber())
                 .bookingDate(DateFormat.dateStringFormatNow())
+                .updateBookingDate(DateFormat.dateStringFormat(transactionKost.getUpdatedAt()))
                 .statusBooking(String.valueOf(EStatus.values()[transactionKost.getAprStatus()]))
                 .build());
     }

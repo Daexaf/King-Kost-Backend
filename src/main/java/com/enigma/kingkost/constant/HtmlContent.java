@@ -35,7 +35,6 @@ public class HtmlContent {
             "            padding: 10px 20px;\n" +
             "            border-radius: 5px;\n" +
             "        }\n" +
-            "        /* Menghilangkan default style untuk tag <li> */\n" +
             "        ul {\n" +
             "            list-style-type: none;\n" +
             "            padding: 0;\n" +
@@ -49,10 +48,12 @@ public class HtmlContent {
             "        <p>Anda telah menerima pemesanan untuk kost yang Anda tawarkan.</p>\n" +
             "        <p>Berikut adalah detail pemesanan:</p>\n" +
             "        <ul>\n" +
+            "            <li style=\"color:black;\">Nama Kost           : [Nama Kost]</li>\n" +
             "            <li style=\"color:black;\">Nama Pemesan           : [Nama Pemesan]</li>\n" +
             "            <li style=\"color:black;\">Email Pemesan          : [Email Pemesan]</li>\n" +
             "            <li style=\"color:black;\">Nomor Telepon Pemesan  : [Nomor Telepon Pemesan]</li>\n" +
             "            <li style=\"color:black;\">Tanggal Pemesan        : [Tanggal Pemesan]</li>\n" +
+            "            <li style=\"color:black;\">Tanggal Update Pemesanan        : [Tanggal Update Pemesan]</li>\n" +
             "            <li style=\"color:black;\">Status Pemesan         : <h5 style=\"color:blue;\">[Status Pemesan]</h5></li>\n" +
             "        </ul>\n" +
             "        <p>Silakan hubungi pemesan segera untuk proses selanjutnya.</p>\n" +
@@ -94,7 +95,6 @@ public class HtmlContent {
             "            padding: 10px 20px;\n" +
             "            border-radius: 5px;\n" +
             "        }\n" +
-            "        /* Menghilangkan default style untuk tag <li> */\n" +
             "        ul {\n" +
             "            list-style-type: none;\n" +
             "            padding: 0;\n" +
@@ -108,10 +108,12 @@ public class HtmlContent {
             "        <p>Anda telah membuat pemesanan untuk kost yang Anda pilih.</p>\n" +
             "        <p>Berikut adalah detail pemesanan:</p>\n" +
             "        <ul>\n" +
-            "            <li style=\"color:black;\">Nama Pemilik Kost           : [Nama Pemesan]</li>\n" +
-            "            <li style=\"color:black;\">Email Pemilik Kost          : [Email Pemesan]</li>\n" +
-            "            <li style=\"color:black;\">Nomor Telepon Pemilik Kost  : [Nomor Telepon Pemesan]</li>\n" +
+            "            <li style=\"color:black;\">Nama Kost           : [Nama Kost]</li>\n" +
+            "            <li style=\"color:black;\">Nama Pemilik Kost           : [Nama Pemilik Kost]</li>\n" +
+            "            <li style=\"color:black;\">Email Pemilik Kost          : [Email Pemilik Kost]</li>\n" +
+            "            <li style=\"color:black;\">Nomor Telepon Pemilik Kost  : [Nomor Telepon Pemilik Kost]</li>\n" +
             "            <li style=\"color:black;\">Tanggal Pemesan        : [Tanggal Pemesan]</li>\n" +
+            "            <li style=\"color:black;\">Tanggal Update Pemesanan        : [Tanggal Update Pemesan]</li>\n" +
             "            <li style=\"color:black;\">Status Pemesan         : <h5 style=\"color:blue;\">[Status Pemesan]</h5></li>\n" +
             "        </ul>\n" +
             "        <p>Silakan hubungi pemesan segera untuk proses selanjutnya.</p>\n" +
