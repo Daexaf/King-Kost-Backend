@@ -16,6 +16,4 @@ public class CityResponse {
     private String id;
     private String name;
     private Province province;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

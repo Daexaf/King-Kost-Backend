@@ -33,7 +33,6 @@ public class KostMapper {
                 .province(ProvinceResponse.builder()
                         .id(kost.getProvince().getId())
                         .name(kost.getProvince().getName())
-                        .createdAt(kost.getProvince().getCreatedAt())
                         .build())
                 .city(CityResponse.builder()
                         .id(kost.getCity().getId())
@@ -50,36 +49,4 @@ public class KostMapper {
                 .build();
     }
 
-    public static Kost kostResponseToKost(KostResponse kostResponse){
-        return Kost.builder()
-                .id(kostResponse.getId())
-                .name(kostResponse.getName())
-                .description(kostResponse.getDescription())
-                .availableRoom(kostResponse.getAvailableRoom())
-                .seller(Seller.builder()
-                        .id(kostResponse.getSeller().getId())
-                        .fullName(kostResponse.getSeller().getFullName())
-                        .email(kostResponse.getSeller().getEmail())
-                        .genderTypeId(kostResponse.getGenderType())
-                        .phoneNumber(kostResponse.getSeller().getPhoneNumber())
-                        .address(kostResponse.getSeller().getAddress())
-                        .build())
-                .isWifi(kostResponse.getIsWifi())
-                .isAc(kostResponse.getIsAc())
-                .isParking(kostResponse.getIsParking())
-                .genderType(kostResponse.getGenderType())
-                .province(Province.builder()
-                        .id(kostResponse.getProvince().getId())
-                        .build())
-                .city(City.builder()
-                        .id(kostResponse.getCity().getId())
-                        .build())
-                .subdistrict(Subdistrict.builder()
-                        .id(kostResponse.getSubdistrict().getId())
-                        .build())
-                .isActive(kostResponse.getIsActive())
-                .createdAt(kostResponse.getCreatedAt())
-                .updatedAt(kostResponse.getUpdatedAt())
-                .build();
-    }
 }

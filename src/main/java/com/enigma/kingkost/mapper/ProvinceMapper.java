@@ -11,8 +11,6 @@ public class ProvinceMapper {
         provinces.forEach(province -> provinceReponse.add(ProvinceResponse.builder()
                 .id(province.getId())
                 .name(province.getName())
-                .createdAt(province.getCreatedAt())
-                .updatedAt(province.getUpdatedAt())
                 .build()));
         return provinceReponse;
     }
@@ -21,8 +19,6 @@ public class ProvinceMapper {
         return ProvinceResponse.builder()
                 .id(province.getId())
                 .name(province.getName())
-                .createdAt(province.getCreatedAt())
-                .updatedAt(province.getUpdatedAt())
                 .build();
     }
 }

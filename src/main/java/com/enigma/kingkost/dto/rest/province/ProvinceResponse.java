@@ -14,6 +14,4 @@ import java.time.LocalDateTime;
 public class ProvinceResponse {
     private String id;
     private String name;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }
