@@ -49,7 +49,7 @@ public class KostController {
     }
 
     @GetMapping
-    public ResponseEntity<CommondResponseWithPagging> getAllKostAndManyFeature(@RequestParam(name = "name", required = false) String name, @RequestParam(name = "maxPrice", required = false) Double maxPrice, @RequestParam(name = "province_id", required = false) String province_id, @RequestParam(name = "city_id", required = false) String city_id, @RequestParam(name = "subdistrict_id", required = false) String subdistrict_id, @RequestParam(value = "gender_type_id", required = false) String gender_type_id, @RequestParam(value = "page", required = false, defaultValue = "0") Integer page, @RequestParam(value = "size", required = false, defaultValue = "5") Integer size) {
+    public ResponseEntity<CommondResponseWithPagging> getAllKostAndManyFeature(@RequestParam(name = "name", required = false) String name, @RequestParam(name = "maxPrice", required = false) Double maxPrice, @RequestParam(name = "province_id", required = false) String province_id, @RequestParam(name = "city_id", required = false) String city_id, @RequestParam(name = "subdistrict_id", required = false) String subdistrict_id, @RequestParam(value = "gender_type_id", required = false) String gender_type_id, @RequestParam(value = "page", required = false, defaultValue = "0") Integer page, @RequestParam(value = "size", required = false, defaultValue = "5") Integer size, @RequestParam(value = "sellerId") String sellerId) {
         Page<KostResponse> kostResponses = kostService.getAll(GetAllRequest.builder()
                 .name(name)
                 .maxPrice(maxPrice)
@@ -57,6 +57,7 @@ public class KostController {
                 .city_id(city_id)
                 .subdistrict_id(subdistrict_id)
                 .gender_type_id(gender_type_id)
+                .sellerId(sellerId)
                 .page(page)
                 .size(size)
                 .build());
