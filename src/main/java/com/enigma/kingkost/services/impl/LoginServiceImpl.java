@@ -1,11 +1,8 @@
 package com.enigma.kingkost.services.impl;
+
 import com.enigma.kingkost.dto.request.LoginRequest;
 import com.enigma.kingkost.dto.response.LoginResponse;
 import com.enigma.kingkost.entities.AppUser;
-import com.enigma.kingkost.entities.Customer;
-import com.enigma.kingkost.entities.UserCredential;
-import com.enigma.kingkost.repositories.CustomerRepository;
-import com.enigma.kingkost.repositories.UserCredentialRepository;
 import com.enigma.kingkost.security.JwtUtil;
 import com.enigma.kingkost.services.*;
 import com.enigma.kingkost.util.ValidationUtil;
@@ -25,7 +22,6 @@ public class LoginServiceImpl implements LoginService {
     private final JwtUtil jwtUtil;
     private final ValidationUtil validationUtil;
     private final AuthenticationManager authenticationManager;
-    private final CustomerRepository customerRepository;
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -57,7 +53,7 @@ public class LoginServiceImpl implements LoginService {
 
         } catch (AuthenticationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username cannot be null");
         }
     }

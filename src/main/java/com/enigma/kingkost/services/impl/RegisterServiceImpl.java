@@ -15,10 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +36,7 @@ public class RegisterServiceImpl implements RegisterService {
             validationUtil.validate(request);
             System.out.println("Received Username: " + request.getFullName());
 
-            if(request.getFullName() == null){
+            if (request.getFullName() == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Full name cannot be null");
             }
 
@@ -66,11 +63,6 @@ public class RegisterServiceImpl implements RegisterService {
                     .userCredential(userCredential)
                     .build();
 
-//            if (profileImage != null) {
-//                customer.setProfileImageName(profileImage.getOriginalFilename());
-//                customer.setProfileImageType(profileImage.getContentType());
-//                customer.setProfileImageData(profileImage.getBytes());
-//            }
             customerService.createCustomer(customer);
             return RegisterResponse.builder()
                     .username(userCredential.getUsername())
@@ -89,7 +81,7 @@ public class RegisterServiceImpl implements RegisterService {
             validationUtil.validate(request);
             System.out.println("Received Username: " + request.getFullName());
 
-            if(request.getFullName() == null){
+            if (request.getFullName() == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Full name cannot be null");
             }
 
@@ -116,11 +108,6 @@ public class RegisterServiceImpl implements RegisterService {
                     .userCredential(userCredential)
                     .build();
 
-//            if (profileImage != null) {
-//                seller.setProfileImageName(profileImage.getOriginalFilename());
-//                seller.setProfileImageType(profileImage.getContentType());
-//                seller.setProfileImageData(profileImage.getBytes());
-//            }
             sellerService.createSeller(seller);
             return RegisterResponse.builder()
                     .username(userCredential.getUsername())

@@ -7,7 +7,6 @@ import com.enigma.kingkost.entities.GenderType;
 import com.enigma.kingkost.entities.ImagesProfile;
 import com.enigma.kingkost.entities.UserCredential;
 import com.enigma.kingkost.repositories.CustomerRepository;
-import com.enigma.kingkost.repositories.UserCredentialRepository;
 import com.enigma.kingkost.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +25,6 @@ public class CustomerServiceImpl implements CustomerService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final ImagesProfileService imagesProfileService;
-    private final UserCredentialRepository userCredentialRepository;
 
     @Override
     public CustomerResponse createCustomer(Customer customerRequest) {
@@ -96,7 +94,9 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse addOrUpdateProfileImageForCustomer(String customerId, MultipartFile profileImage) throws IOException {
         ImagesProfile imagesProfile = imagesProfileService.store(profileImage);
         Customer customer = customerRepository.findById(customerId).orElse(null);
-
+        if (customer == null) {
+            throw new NullPointerException("customer is null");
+        }
         if (customer != null) {
             customer.setProfileImageName(imagesProfile.getName());
             customer.setProfileImageType(imagesProfile.getType());

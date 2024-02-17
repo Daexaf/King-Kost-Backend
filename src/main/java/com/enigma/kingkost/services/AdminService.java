@@ -2,7 +2,6 @@ package com.enigma.kingkost.services;
 
 import com.enigma.kingkost.dto.request.AdminRequest;
 import com.enigma.kingkost.dto.response.AdminResponse;
-import com.enigma.kingkost.dto.response.CustomerResponse;
 
 import java.util.List;
 

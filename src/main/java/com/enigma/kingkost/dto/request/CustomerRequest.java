@@ -1,12 +1,10 @@
 package com.enigma.kingkost.dto.request;
 
-import com.enigma.kingkost.entities.GenderType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor

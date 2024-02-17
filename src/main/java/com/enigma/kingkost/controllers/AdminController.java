@@ -2,9 +2,7 @@ package com.enigma.kingkost.controllers;
 
 import com.enigma.kingkost.constant.AppPath;
 import com.enigma.kingkost.dto.request.AdminRequest;
-import com.enigma.kingkost.dto.request.CustomerRequest;
 import com.enigma.kingkost.dto.response.AdminResponse;
-import com.enigma.kingkost.dto.response.CustomerResponse;
 import com.enigma.kingkost.services.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

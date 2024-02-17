@@ -8,7 +8,6 @@ import com.enigma.kingkost.dto.response.RegisterResponse;
 import com.enigma.kingkost.services.RegisterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController

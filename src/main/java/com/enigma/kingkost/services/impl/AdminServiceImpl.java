@@ -35,6 +35,9 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public AdminResponse update(AdminRequest adminRequest) {
         Admin currentAdmin = adminRepository.findById(adminRequest.getId()).orElse(null);
+        if (currentAdmin == null) {
+            throw new NullPointerException("Current admin is null");
+        }
         if (currentAdmin != null) {
             LocalDateTime createdAt = currentAdmin.getCreatedAt();
             currentAdmin.setUsername(adminRequest.getUsername());

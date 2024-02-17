@@ -1,6 +1,5 @@
 package com.enigma.kingkost.dto.request;
 
-import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

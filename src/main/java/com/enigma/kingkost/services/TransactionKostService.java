@@ -5,7 +5,6 @@ import com.enigma.kingkost.dto.request.TransactionKostRequest;
 import com.enigma.kingkost.entities.TransactionKost;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
 
 public interface TransactionKostService {
     TransactionKost create(TransactionKostRequest transactionKostRequest);
