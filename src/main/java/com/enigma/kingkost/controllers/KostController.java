@@ -49,7 +49,7 @@ public class KostController {
     }
 
     @GetMapping
-    public ResponseEntity<CommondResponseWithPagging> getAllKostAndManyFeature(@RequestParam(name = "name", required = false) String name, @RequestParam(name = "maxPrice", required = false) Double maxPrice, @RequestParam(name = "province_id", required = false) String province_id, @RequestParam(name = "city_id", required = false) String city_id, @RequestParam(name = "subdistrict_id", required = false) String subdistrict_id, @RequestParam(value = "gender_type_id", required = false) String gender_type_id, @RequestParam(value = "page", required = false, defaultValue = "0") Integer page, @RequestParam(value = "size", required = false, defaultValue = "5") Integer size, @RequestParam(value = "sellerId") String sellerId) {
+    public ResponseEntity<CommondResponseWithPagging> getAllKostAndManyFeature(@RequestParam(name = "name", required = false) String name, @RequestParam(name = "maxPrice", required = false) Double maxPrice, @RequestParam(name = "province_id", required = false) String province_id, @RequestParam(name = "city_id", required = false) String city_id, @RequestParam(name = "subdistrict_id", required = false) String subdistrict_id, @RequestParam(value = "gender_type_id", required = false) String gender_type_id, @RequestParam(value = "page", required = false, defaultValue = "0") Integer page, @RequestParam(value = "size", required = false, defaultValue = "5") Integer size, @RequestParam(value = "sellerId", required = false) String sellerId) {
         Page<KostResponse> kostResponses = kostService.getAll(GetAllRequest.builder()
                 .name(name)
                 .maxPrice(maxPrice)
@@ -106,13 +106,13 @@ public class KostController {
     }
 
     @PostMapping(value = AppPath.VALUE_IMAGE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CommondResponse> updateImageKost(@RequestParam("kostId") String kostId, @RequestParam("fileImages") MultipartFile[] fileImages) {
+    public ResponseEntity<CommondResponseNoData> updateImageKost(@RequestParam("kostId") String kostId, @RequestParam("fileImages") MultipartFile[] fileImages) {
         UpdateImageKostRequest updateImageKostRequest = UpdateImageKostRequest.builder()
                 .kost_id(kostId)
                 .fileImages(fileImages)
                 .build();
         kostService.updateImageKost(updateImageKostRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(CommondResponse.builder()
+        return ResponseEntity.status(HttpStatus.OK).body(CommondResponseNoData.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Success update image kost")
                 .build());

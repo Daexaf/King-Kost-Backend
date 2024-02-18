@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -22,13 +23,13 @@ import org.springframework.web.bind.annotation.*;
 public class TransactionKostController {
     private final TransactionKostService transactionKostService;
 
+    @PreAuthorize("hashRole('ROLE_CUSTOMER')")
     @PostMapping
-    public ResponseEntity<CommondResponse> createTransaction(@RequestBody TransactionKostRequest transactionKostRequest) {
-        TransactionKost transactionKost = transactionKostService.create(transactionKostRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(CommondResponse.builder()
+    public ResponseEntity<CommondResponseNoData> createTransaction(@RequestBody TransactionKostRequest transactionKostRequest) {
+        transactionKostService.create(transactionKostRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(CommondResponseNoData.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Success transaction")
-                .data(transactionKost)
                 .build());
     }
 

@@ -38,9 +38,9 @@ public class TransactionKostServiceImpl implements TransactionKostService {
 
     @Transactional(rollbackOn = Exception.class)
     @Override
-    public TransactionKost create(TransactionKostRequest transactionKostRequest) {
+    public void create(TransactionKostRequest transactionKostRequest) {
         Kost findKost = kostService.getById(transactionKostRequest.getKostId());
-        if (findKost.getAvailableRoom() <= 0) {
+        if (findKost.getAvailableRoom() == 0) {
             throw new NullPointerException("Boarding rooms are not available");
         }
         kostService.ReduceItAvailableRoom(findKost);
@@ -89,7 +89,6 @@ public class TransactionKostServiceImpl implements TransactionKostService {
                 .updateBookingDate(DateFormat.dateStringFormat(transactionKost.getCreatedAt()))
                 .statusBooking(String.valueOf(EStatus.values()[transactionKost.getAprStatus()]))
                 .build());
-        return transactionKost;
     }
 
     @Override

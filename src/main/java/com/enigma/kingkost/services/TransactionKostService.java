@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 
 
 public interface TransactionKostService {
-    TransactionKost create(TransactionKostRequest transactionKostRequest);
+    void create(TransactionKostRequest transactionKostRequest);
 
     Page<TransactionKost> getAllTransaction(GetAllTransactionRequest getAllTransactionRequest);
 
