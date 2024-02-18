@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class KostController {
     private final KostService kostService;
 
+    @PreAuthorize("hasRole('ROLE_SELLER')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CommondResponse> createKost(@RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("price") Double price, @RequestParam("availableRoom") Integer availableRoom, @RequestParam("image") MultipartFile[] image, @RequestParam("seller_id") String sellerId, @RequestParam("isWifi") Boolean isWifi, @RequestParam("isAc") Boolean isAc, @RequestParam("isParking") Boolean isParking, @RequestParam("genderId") String genderId, @RequestParam("provinceId") String provinceId, @RequestParam("cityId") String cityId, @RequestParam("subdistrictId") String subdistrictId) {
         KostResponse kostResponse = kostService.createKostAndKostprice(KostRequest.builder()
@@ -75,6 +77,7 @@ public class KostController {
                 .build());
     }
 
+    @PreAuthorize("hasRole('ROLE_SELLER')")
     @PutMapping
     public ResponseEntity<CommondResponse> updateKost(@Valid @RequestBody UpdateKostRequest updateKostRequest) {
 
@@ -96,6 +99,7 @@ public class KostController {
                 .build());
     }
 
+    @PreAuthorize("hasRole('ROLE_SELLER')")
     @DeleteMapping(AppPath.VALUE_ID)
     public ResponseEntity<CommondResponse> deleteKost(@PathVariable String id) {
         kostService.deleteKost(id);
@@ -105,6 +109,7 @@ public class KostController {
                 .build());
     }
 
+    @PreAuthorize("hasRole('ROLE_SELLER')")
     @PostMapping(value = AppPath.VALUE_IMAGE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CommondResponseNoData> updateImageKost(@RequestParam("kostId") String kostId, @RequestParam("fileImages") MultipartFile[] fileImages) {
         UpdateImageKostRequest updateImageKostRequest = UpdateImageKostRequest.builder()

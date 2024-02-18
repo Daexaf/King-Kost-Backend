@@ -9,6 +9,7 @@ import com.enigma.kingkost.entities.*;
 import com.enigma.kingkost.repositories.UserCredentialRepository;
 import com.enigma.kingkost.services.*;
 import com.enigma.kingkost.util.ValidationUtil;
+import com.google.api.gax.rpc.AlreadyExistsException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -38,6 +39,10 @@ public class RegisterServiceImpl implements RegisterService {
 
             if (request.getFullName() == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Full name cannot be null");
+            }
+            UserCredential findUserCredential = userCredentialRepository.findByUsername(request.getUsername()).orElse(null);
+            if (findUserCredential != null && findUserCredential.getUsername().equals(request.getUsername())) {
+                throw new NullPointerException("Username already use");
             }
 
             RoleType role = RoleType.builder()
@@ -83,6 +88,11 @@ public class RegisterServiceImpl implements RegisterService {
 
             if (request.getFullName() == null) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Full name cannot be null");
+            }
+
+            UserCredential findUserCredential = userCredentialRepository.findByUsername(request.getUsername()).orElse(null);
+            if (findUserCredential != null && findUserCredential.getUsername().equals(request.getUsername())) {
+                throw new NullPointerException("Username already use");
             }
 
             RoleType role = RoleType.builder()

@@ -14,13 +14,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = AppPath.URL_CROSS)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(AppPath.SELLER)
 public class SellerController {
     private final SellerService sellerService;
+
     @GetMapping("/v1")
     public List<SellerResponse> getAllSeller() {
         return sellerService.getAll();

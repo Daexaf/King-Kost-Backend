@@ -6,17 +6,17 @@ import com.enigma.kingkost.services.ApprovalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = AppPath.URL_CROSS)
 @RestController
 @RequestMapping(AppPath.VALUE_APPROV)
 @RequiredArgsConstructor
 public class ApprovalController {
     private final ApprovalService approvalService;
 
+//    @PreAuthorize("hasRole('ROLE_SELLER')")
     @PostMapping
     public ResponseEntity<CommondResponseNoData> approvTransaction(@RequestParam("transactionId") String transactionId, @RequestParam("approv") Integer approv, @RequestParam("sellerId") String sellerId) {
         approvalService.approveTransactionKost(transactionId, approv, sellerId);

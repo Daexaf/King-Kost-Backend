@@ -9,7 +9,7 @@ import com.enigma.kingkost.services.RegisterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = AppPath.URL_CROSS)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(AppPath.AUTH)

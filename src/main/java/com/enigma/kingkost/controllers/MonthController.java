@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = AppPath.URL_CROSS)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(AppPath.MONTH)

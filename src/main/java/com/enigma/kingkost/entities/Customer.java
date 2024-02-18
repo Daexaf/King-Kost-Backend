@@ -29,7 +29,7 @@ public class Customer {
     private String profileImageName;
     private String profileImageType;
     private String url;
-    private boolean active = false;
+    private boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -37,6 +37,7 @@ public class Customer {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
+        this.active = true;
     }
 
     @PreUpdate

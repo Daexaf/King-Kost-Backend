@@ -16,14 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-
+@CrossOrigin(origins = AppPath.URL_CROSS)
 @RestController
 @RequestMapping(AppPath.VALUE_TRANSACTION_KOST)
 @RequiredArgsConstructor
 public class TransactionKostController {
     private final TransactionKostService transactionKostService;
 
-    @PreAuthorize("hashRole('ROLE_CUSTOMER')")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @PostMapping
     public ResponseEntity<CommondResponseNoData> createTransaction(@RequestBody TransactionKostRequest transactionKostRequest) {
         transactionKostService.create(transactionKostRequest);
@@ -66,6 +66,7 @@ public class TransactionKostController {
                 .build());
     }
 
+//    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @PostMapping(AppPath.VALUE_CANCEL)
     public ResponseEntity<CommondResponseNoData> cancelTransaction(@RequestParam("transactionId") String transactionId, @RequestParam("customerId") String customerId) {
         transactionKostService.cancelTransactionKost(customerId, transactionId);

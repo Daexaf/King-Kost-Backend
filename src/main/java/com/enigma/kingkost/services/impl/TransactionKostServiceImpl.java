@@ -45,6 +45,9 @@ public class TransactionKostServiceImpl implements TransactionKostService {
         }
         kostService.ReduceItAvailableRoom(findKost);
         CustomerResponse findCustomer = customerService.getById(transactionKostRequest.getCustomerId());
+        if (!findCustomer.getGenderTypeId().getName().equals(findKost.getGenderType().getName())) {
+            throw new NullPointerException("Can't book a boarding kost because the boarding kost is " + findKost.getGenderType().getName());
+        }
         MonthType monthType = monthService.getById(transactionKostRequest.getMonthTypeId());
         PaymentType paymentType = paymentService.getById(transactionKostRequest.getPaymentTypeId());
         TransactionKost transactionKost = transactionKostRepository.save(TransactionKost.builder()
@@ -140,7 +143,7 @@ public class TransactionKostServiceImpl implements TransactionKostService {
             throw new NullPointerException("Cannot cancel transaction");
         }
         if (findTransaction.getAprStatus() > 0) {
-            throw new NullPointerException("Transaction was cancel");
+            throw new NullPointerException("Transaction was changges");
         }
         TransactionKost transactionKost = transactionKostRepository.save(TransactionKost.builder()
                 .id(findTransaction.getId())
