@@ -1,25 +1,30 @@
 package com.enigma.kingkost.services.impl;
+
+import com.enigma.kingkost.constant.EPayment;
 import com.enigma.kingkost.entities.PaymentType;
 import com.enigma.kingkost.repositories.PaymentRepository;
 import com.enigma.kingkost.services.PaymentService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
 
+    @PostConstruct
     @Override
-    public PaymentType getOrSave(PaymentType payment) {
-        Optional<PaymentType> optionalPayment = paymentRepository.findById(payment.getId());
-        if (!optionalPayment.isEmpty()) {
-            return optionalPayment.get();
+    public void autoCreate() {
+        List<PaymentType> paymentTypes = getAll();
+        if (paymentTypes.isEmpty()) {
+            Arrays.stream(EPayment.values()).forEach(ePayment -> paymentRepository.save(PaymentType.builder()
+                    .name(ePayment)
+                    .build()));
         }
-        return paymentRepository.save(payment);
     }
 
     @Override

@@ -1,12 +1,15 @@
 package com.enigma.kingkost.services.impl;
+
+import com.enigma.kingkost.constant.EMonth;
 import com.enigma.kingkost.entities.MonthType;
 import com.enigma.kingkost.repositories.MonthRepository;
 import com.enigma.kingkost.services.MonthService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,19 +17,23 @@ public class MonthServiceImpl implements MonthService {
 
     private final MonthRepository monthRepository;
 
+    @PostConstruct
     @Override
-    public MonthType getOrSave(MonthType month) {
-        Optional<MonthType> optionalMonth = monthRepository.findById(month.getId());
-        if (!optionalMonth.isEmpty()) {
-            return optionalMonth.get();
+    public void autoCreate() {
+        List<MonthType> monthTypes = getAll();
+        if (monthTypes.isEmpty()) {
+            Arrays.stream(EMonth.values()).forEach(eMonth -> monthRepository.save(MonthType.builder()
+                    .name(eMonth)
+                    .build()));
         }
-        return monthRepository.save(month);
     }
 
     @Override
     public MonthType getById(String id) {
         MonthType month = monthRepository.findById(id).orElse(null);
-        assert month != null;
+        if (month == null) {
+            throw new NullPointerException("Mont not found");
+        }
         return month;
     }
 

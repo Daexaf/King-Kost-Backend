@@ -39,8 +39,6 @@ public class ProvinceServiceImpl implements ProvinceService {
                     provinceRepository.save(Province.builder()
                             .id(provinceResponse.getId())
                             .name(provinceResponse.getName())
-                            .createdAt(LocalDateTime.now())
-                            .updatedAt(LocalDateTime.now())
                             .build());
                 }
             } else {

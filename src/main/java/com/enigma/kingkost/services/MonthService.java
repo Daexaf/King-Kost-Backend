@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface MonthService {
 
-    MonthType getOrSave(MonthType month);
+    void autoCreate();
 
     MonthType getById(String id);
 

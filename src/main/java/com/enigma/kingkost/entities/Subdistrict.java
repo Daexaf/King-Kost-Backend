@@ -17,10 +17,6 @@ public class Subdistrict {
     private String id;
     @Column(nullable = false, length = 120)
     private String name;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
     @ManyToOne
     @JoinColumn(name = "city_id")
     private City city;

@@ -32,6 +32,7 @@ public class KostResponse {
     private CityResponse city;
     private Boolean isActive;
     private SubdistrictResponse subdistrict;
+    private Integer currentBookingStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

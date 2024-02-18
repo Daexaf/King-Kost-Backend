@@ -13,6 +13,7 @@ import com.enigma.kingkost.dto.rest.subdistrict.SubdistrictResponse;
 import com.enigma.kingkost.entities.*;
 import com.enigma.kingkost.mapper.*;
 import com.enigma.kingkost.repositories.KostRepository;
+import com.enigma.kingkost.repositories.TransactionKostRepository;
 import com.enigma.kingkost.services.*;
 import com.enigma.kingkost.services.FileStorageService;
 import jakarta.persistence.criteria.Join;
@@ -47,6 +48,7 @@ public class KostServiceImpl implements KostService {
     private final SubdistrictService subdistrictService;
     private final SellerService sellerService;
     private final GenderService genderService;
+    private final TransactionKostRepository transactionKostService;
 
     @Transactional(rollbackOn = Exception.class)
     @Override
@@ -115,7 +117,7 @@ public class KostServiceImpl implements KostService {
                 .subdistrict(findSubdistrict)
                 .isActive(true)
                 .createdAt(LocalDateTime.now())
-                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build());
 
         KostPrice kostPrice = kostPriceService.save(KostPrice.builder()
@@ -123,6 +125,7 @@ public class KostServiceImpl implements KostService {
                 .kost(saveKost)
                 .isActive(true)
                 .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build());
         List<Image> listImageSave = new ArrayList<>();
 
@@ -169,6 +172,7 @@ public class KostServiceImpl implements KostService {
                 .createdAt(saveKost.getCreatedAt())
                 .images(ImageMapper.listImageToListImageResponse(listImageSave))
                 .kostPrice(kostPrice)
+                .currentBookingStatus(4)
                 .build();
     }
 
@@ -240,6 +244,7 @@ public class KostServiceImpl implements KostService {
                         .images(imageList)
                         .province(ProvinceMapper.provinceToProvinceResponse(kost.getProvince()))
                         .city(CityMapper.cityToCityResponse(kost.getCity()))
+                        .currentBookingStatus(4)
                         .subdistrict(SubdistrictMapper.subdistrictToSubdistrictResponse(kost.getSubdistrict()))
                         .build());
             }
@@ -360,6 +365,7 @@ public class KostServiceImpl implements KostService {
                                     .build())
                             .build())
                     .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
                     .build());
         }
 
@@ -385,6 +391,7 @@ public class KostServiceImpl implements KostService {
                 .city(CityMapper.cityToCityResponse(city))
                 .subdistrict(SubdistrictMapper.subdistrictToSubdistrictResponse(subdistrict))
                 .images(images)
+                .currentBookingStatus(4)
                 .createdAt(saveKost.getCreatedAt())
                 .updatedAt(saveKost.getUpdatedAt())
                 .build();
@@ -413,7 +420,6 @@ public class KostServiceImpl implements KostService {
                 .province(Province.builder()
                         .id(kost.getProvince().getId())
                         .name(kost.getProvince().getName())
-                        .createdAt(kost.getProvince().getCreatedAt())
                         .build())
                 .city(City.builder()
                         .id(kost.getCity().getId())
@@ -428,7 +434,6 @@ public class KostServiceImpl implements KostService {
                                 .province(Province.builder()
                                         .id(kost.getProvince().getId())
                                         .name(kost.getProvince().getName())
-                                        .createdAt(kost.getProvince().getCreatedAt())
                                         .build())
                                 .build())
                         .build())
@@ -443,7 +448,8 @@ public class KostServiceImpl implements KostService {
         Kost kost = getById(id);
         KostPrice kostPrice = kostPriceService.getByKostId(kost.getId());
         List<Image> imageList = imageKostService.getByKostId(kost.getId());
-        return KostMapper.kostToKostResponse(kost, kostPrice, imageList);
+        TransactionKost transactionKost = transactionKostService.getByKostIdAndAprStatusEquals(kost.getId(), 0);
+        return KostMapper.kostToKostResponse(kost, kostPrice, imageList, transactionKost.getAprStatus());
     }
 
     @Override

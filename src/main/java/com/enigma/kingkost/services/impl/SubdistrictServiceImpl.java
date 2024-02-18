@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.webjars.NotFoundException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -49,8 +48,6 @@ public class SubdistrictServiceImpl implements SubdistrictService {
                                         .name(cityResponse.getName())
                                         .province(cityResponse.getProvince())
                                         .build())
-                                .createdAt(LocalDateTime.now())
-                                .updatedAt(LocalDateTime.now())
                                 .build())
                 );
             });

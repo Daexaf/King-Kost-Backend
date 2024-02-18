@@ -35,6 +35,7 @@ public class TransactionKostServiceImpl implements TransactionKostService {
     private final MonthService monthService;
     private final PaymentService paymentService;
     private final EmailService emailService;
+    private final ImageKostService imageKostService;
 
     @Transactional(rollbackOn = Exception.class)
     @Override
@@ -132,6 +133,11 @@ public class TransactionKostServiceImpl implements TransactionKostService {
     @Override
     public TransactionKost update(TransactionKost transactionKost) {
         return transactionKostRepository.save(transactionKost);
+    }
+
+    @Override
+    public TransactionKost getByKostId(String kostId) {
+        return transactionKostRepository.getByKostIdAndAprStatusEquals(kostId, 0);
     }
 
     @Override

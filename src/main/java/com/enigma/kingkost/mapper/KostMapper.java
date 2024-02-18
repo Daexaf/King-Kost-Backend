@@ -10,7 +10,7 @@ import com.enigma.kingkost.entities.*;
 import java.util.List;
 
 public class KostMapper {
-    public static KostResponse kostToKostResponse(Kost kost, KostPrice kostPrice, List<Image> images) {
+    public static KostResponse kostToKostResponse(Kost kost, KostPrice kostPrice, List<Image> images, Integer currentBookingStatus) {
         return KostResponse.builder()
                 .id(kost.getId())
                 .name(kost.getName())
@@ -44,6 +44,7 @@ public class KostMapper {
                         .name(kost.getSubdistrict().getId())
                         .city(kost.getCity())
                         .build())
+                .currentBookingStatus(currentBookingStatus)
                 .createdAt(kost.getCreatedAt())
                 .updatedAt(kost.getUpdatedAt())
                 .build();

@@ -5,7 +5,6 @@ import com.enigma.kingkost.dto.request.TransactionKostRequest;
 import com.enigma.kingkost.entities.TransactionKost;
 import org.springframework.data.domain.Page;
 
-
 public interface TransactionKostService {
     void create(TransactionKostRequest transactionKostRequest);
 
@@ -14,6 +13,8 @@ public interface TransactionKostService {
     TransactionKost getById(String id);
 
     TransactionKost update(TransactionKost transactionKost);
+
+    TransactionKost getByKostId(String kostId);
 
     void cancelTransactionKost(String customerId, String transactionId);
 }

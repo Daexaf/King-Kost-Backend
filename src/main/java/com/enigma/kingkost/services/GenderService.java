@@ -5,8 +5,7 @@ import com.enigma.kingkost.entities.GenderType;
 import java.util.List;
 
 public interface GenderService {
-    GenderType getOrSave(GenderType gender);
-
+    void autoCreate();
     GenderType getById(String id);
 
     List<GenderType> getAll();

@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface PaymentService {
 
-    PaymentType getOrSave(PaymentType payment);
+    void autoCreate();
 
     PaymentType getById(String id);
 

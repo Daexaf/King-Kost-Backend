@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.webjars.NotFoundException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -49,10 +48,7 @@ public class CityServiceImpl implements CityService {
                             .province(Province.builder()
                                     .id(province.getId())
                                     .name(province.getName())
-                                    .createdAt(LocalDateTime.now())
                                     .build())
-                            .createdAt(LocalDateTime.now())
-                            .updatedAt(LocalDateTime.now())
                             .build());
                 }
             });

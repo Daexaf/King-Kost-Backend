@@ -16,6 +16,4 @@ public class SubdistrictResponse {
     private String id;
     private String name;
     private City city;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

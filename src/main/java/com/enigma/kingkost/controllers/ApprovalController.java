@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class ApprovalController {
     private final ApprovalService approvalService;
 
-//    @PreAuthorize("hasRole('ROLE_SELLER')")
+    @PreAuthorize("hasRole('ROLE_SELLER')")
     @PostMapping
     public ResponseEntity<CommondResponseNoData> approvTransaction(@RequestParam("transactionId") String transactionId, @RequestParam("approv") Integer approv, @RequestParam("sellerId") String sellerId) {
         approvalService.approveTransactionKost(transactionId, approv, sellerId);

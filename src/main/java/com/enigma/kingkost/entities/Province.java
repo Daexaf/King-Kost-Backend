@@ -19,8 +19,4 @@ public class Province {
     private String id;
     @Column(nullable = false, length = 120, unique = true)
     private String name;
-    @Column(nullable = false, name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }

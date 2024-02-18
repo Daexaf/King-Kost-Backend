@@ -66,7 +66,7 @@ public class TransactionKostController {
                 .build());
     }
 
-//    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @PostMapping(AppPath.VALUE_CANCEL)
     public ResponseEntity<CommondResponseNoData> cancelTransaction(@RequestParam("transactionId") String transactionId, @RequestParam("customerId") String customerId) {
         transactionKostService.cancelTransactionKost(customerId, transactionId);
