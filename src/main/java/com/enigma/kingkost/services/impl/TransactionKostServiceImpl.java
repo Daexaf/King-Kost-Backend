@@ -168,8 +168,8 @@ public class TransactionKostServiceImpl implements TransactionKostService {
     }
 
     @Override
-    public TransactionKost getByKostId(String kostId) {
-        return transactionKostRepository.getByKostIdAndAprStatusEquals(kostId, 0);
+    public TransactionKost getByKostId(String kostId, String customerId) {
+        return transactionKostRepository.getByKostIdAndCustomerIdAndAprStatusEquals(kostId, customerId, 0);
     }
 
     @Override

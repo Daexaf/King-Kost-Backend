@@ -49,8 +49,7 @@ public class KostServiceImpl implements KostService {
     private final SubdistrictService subdistrictService;
     private final SellerService sellerService;
     private final GenderService genderService;
-    private final TransactionKostRepository transactionKostService;
-    private final UserCredentialRepository user;
+    private final TransactionKostRepository transactionKostRepository;
 
     @Transactional(rollbackOn = Exception.class)
     @Override
@@ -446,12 +445,15 @@ public class KostServiceImpl implements KostService {
     }
 
     @Override
-    public KostResponse getByIdKost(String id) {
+    public KostResponse getByIdKost(String id, String customerId) {
         Kost kost = getById(id);
         KostPrice kostPrice = kostPriceService.getByKostId(kost.getId());
         List<Image> imageList = imageKostService.getByKostId(kost.getId());
-        TransactionKost transactionKost = transactionKostService.getByKostIdAndAprStatusEquals(kost.getId(), 0);
-        return KostMapper.kostToKostResponse(kost, kostPrice, imageList, transactionKost.getAprStatus());
+        TransactionKost transactionKost = transactionKostRepository.getByKostIdAndCustomerIdAndAprStatusEquals(kost.getId(), customerId, 0);
+        if (transactionKost != null) {
+            return KostMapper.kostToKostResponse(kost, kostPrice, imageList, transactionKost.getAprStatus());
+        }
+        return KostMapper.kostToKostResponse(kost, kostPrice, imageList, 4);
     }
 
     @Override

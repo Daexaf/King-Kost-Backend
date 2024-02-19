@@ -15,7 +15,7 @@ public interface TransactionKostService {
 
     TransactionKost update(TransactionKost transactionKost);
 
-    TransactionKost getByKostId(String kostId);
+    TransactionKost getByKostId(String kostId, String customerId);
 
     void cancelTransactionKost(String customerId, String transactionId);
 }

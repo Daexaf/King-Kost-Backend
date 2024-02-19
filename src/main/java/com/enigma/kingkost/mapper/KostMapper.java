@@ -42,10 +42,11 @@ public class KostMapper {
                         .build())
                 .subdistrict(SubdistrictResponse.builder()
                         .id(kost.getSubdistrict().getId())
-                        .name(kost.getSubdistrict().getId())
+                        .name(kost.getSubdistrict().getName())
                         .city(kost.getCity())
                         .build())
                 .currentBookingStatus(currentBookingStatus)
+                .isActive(kost.getIsActive())
                 .createdAt(kost.getCreatedAt())
                 .updatedAt(kost.getUpdatedAt())
                 .build();

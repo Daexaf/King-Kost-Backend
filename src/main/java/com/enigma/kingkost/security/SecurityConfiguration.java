@@ -22,17 +22,17 @@ public class SecurityConfiguration {
     private final AuthTokenFilter authTokenFilter;
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    private static final String[] AUTH_WHITELIST = {"/api/auth/**", "/gender/v1/**", "/**"};
+    private static final String[] AUTH_WHITELIST = {"/api/auth/**", "/gender/v1/**"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req->
+                .authorizeHttpRequests(req ->
                         req.requestMatchers(AUTH_WHITELIST)
                                 .permitAll()
                                 .anyRequest()

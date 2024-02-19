@@ -14,7 +14,7 @@ public interface KostService {
     Kost getById(String id);
     KostResponse updateKost(UpdateKostRequest kostRequest);
     void deleteKost(String id);
-    KostResponse getByIdKost(String id);
+    KostResponse getByIdKost(String id, String customerId);
     void updateImageKost(UpdateImageKostRequest updateImageKostRequest);
     void ReduceItAvailableRoom(Kost kost);
     void addAvailableRoom(Kost kost);

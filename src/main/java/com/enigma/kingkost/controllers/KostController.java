@@ -89,9 +89,9 @@ public class KostController {
                 .build());
     }
 
-    @GetMapping(AppPath.VALUE_ID)
-    public ResponseEntity<CommondResponse> getKostById(@PathVariable String id) {
-        KostResponse kostResponse = kostService.getByIdKost(id);
+    @GetMapping(AppPath.GET_KOST_BY_ID)
+    public ResponseEntity<CommondResponse> getKostById(@RequestParam String kostId, @RequestParam(name = "customerId") String customerId) {
+        KostResponse kostResponse = kostService.getByIdKost(kostId, customerId);
         return ResponseEntity.status(HttpStatus.OK).body(CommondResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Success get kost")
