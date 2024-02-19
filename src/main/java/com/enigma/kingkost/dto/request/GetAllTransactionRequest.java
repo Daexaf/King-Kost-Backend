@@ -15,4 +15,5 @@ public class GetAllTransactionRequest {
     private String sellerId;
     private String customerId;
     private Integer aprovStatus;
+    private String kostName;
 }

@@ -2,13 +2,14 @@ package com.enigma.kingkost.services;
 
 import com.enigma.kingkost.dto.request.GetAllTransactionRequest;
 import com.enigma.kingkost.dto.request.TransactionKostRequest;
+import com.enigma.kingkost.dto.response.TransactionKostResponse;
 import com.enigma.kingkost.entities.TransactionKost;
 import org.springframework.data.domain.Page;
 
 public interface TransactionKostService {
-    void create(TransactionKostRequest transactionKostRequest);
+    TransactionKostResponse create(TransactionKostRequest transactionKostRequest);
 
-    Page<TransactionKost> getAllTransaction(GetAllTransactionRequest getAllTransactionRequest);
+    Page<TransactionKostResponse> getAllTransaction(GetAllTransactionRequest getAllTransactionRequest);
 
     TransactionKost getById(String id);
 

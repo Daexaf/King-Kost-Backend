@@ -3,10 +3,7 @@ package com.enigma.kingkost.controllers;
 import com.enigma.kingkost.constant.AppPath;
 import com.enigma.kingkost.dto.request.GetAllTransactionRequest;
 import com.enigma.kingkost.dto.request.TransactionKostRequest;
-import com.enigma.kingkost.dto.response.CommondResponse;
-import com.enigma.kingkost.dto.response.CommondResponseNoData;
-import com.enigma.kingkost.dto.response.CommondResponseWithPagging;
-import com.enigma.kingkost.dto.response.PaggingResponse;
+import com.enigma.kingkost.dto.response.*;
 import com.enigma.kingkost.entities.TransactionKost;
 import com.enigma.kingkost.services.TransactionKostService;
 import lombok.RequiredArgsConstructor;
@@ -25,22 +22,24 @@ public class TransactionKostController {
 
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     @PostMapping
-    public ResponseEntity<CommondResponseNoData> createTransaction(@RequestBody TransactionKostRequest transactionKostRequest) {
-        transactionKostService.create(transactionKostRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(CommondResponseNoData.builder()
+    public ResponseEntity<CommondResponse> createTransaction(@RequestBody TransactionKostRequest transactionKostRequest) {
+        TransactionKostResponse transactionKostResponse = transactionKostService.create(transactionKostRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(CommondResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Success transaction")
+                .data(transactionKostResponse)
                 .build());
     }
 
     @GetMapping
-    public ResponseEntity<CommondResponseWithPagging> getAllTransactionWithManyRequest(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page, @RequestParam(name = "size", required = false, defaultValue = "5") Integer size, @RequestParam(name = "customerId", required = false) String customerId, @RequestParam(name = "sellerId", required = false) String sellerId, @RequestParam(name = "approveStatus", required = false) Integer approveStatus) {
-        Page<TransactionKost> transactionKosts = transactionKostService.getAllTransaction(GetAllTransactionRequest.builder()
+    public ResponseEntity<CommondResponseWithPagging> getAllTransactionWithManyRequest(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page, @RequestParam(name = "size", required = false, defaultValue = "5") Integer size, @RequestParam(name = "customerId", required = false) String customerId, @RequestParam(name = "sellerId", required = false) String sellerId, @RequestParam(name = "approveStatus", required = false) Integer approveStatus, @RequestParam(name = "kostName", required = false) String kostName) {
+        Page<TransactionKostResponse> transactionKosts = transactionKostService.getAllTransaction(GetAllTransactionRequest.builder()
                 .page(page)
                 .size(size)
                 .customerId(customerId)
                 .sellerId(sellerId)
                 .aprovStatus(approveStatus)
+                .kostName(kostName)
                 .build());
         PaggingResponse paggingResponse = PaggingResponse.builder()
                 .currentPage(page)

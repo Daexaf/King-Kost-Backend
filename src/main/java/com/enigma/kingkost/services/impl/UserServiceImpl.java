@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AppUser loadUserByUserId(String id) {
-        UserCredential userCredential = userCredentialRepository.findById(id).orElseThrow(()-> new UsernameNotFoundException("invalid credential"));
+        UserCredential userCredential = userCredentialRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("invalid credential"));
         return AppUser.builder()
                 .id(userCredential.getId())
                 .username(userCredential.getUsername())
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserCredential userCredential = userCredentialRepository.findByUsername(username)
-                .orElseThrow(()-> new UsernameNotFoundException("invalid credential"));
+                .orElseThrow(() -> new UsernameNotFoundException("invalid credential"));
         return AppUser.builder()
                 .id(userCredential.getId())
                 .username(userCredential.getUsername())
@@ -44,4 +44,5 @@ public class UserServiceImpl implements UserService {
         if (userId != null && loadUserByUserId(userId) != null) return userCredentialRepository.save(userCredential);
         return null;
     }
+
 }

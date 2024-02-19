@@ -28,6 +28,7 @@ public class KostMapper {
                         .phoneNumber(kost.getSeller().getPhoneNumber())
                         .address(kost.getSeller().getAddress())
                         .genderTypeId(kost.getSeller().getGenderTypeId())
+                        .username(kost.getSeller().getUserCredential().getUsername())
                         .build())
                 .images(ImageMapper.listImageToListImageResponse(images))
                 .province(ProvinceResponse.builder()

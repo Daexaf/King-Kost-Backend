@@ -14,6 +14,7 @@ import com.enigma.kingkost.entities.*;
 import com.enigma.kingkost.mapper.*;
 import com.enigma.kingkost.repositories.KostRepository;
 import com.enigma.kingkost.repositories.TransactionKostRepository;
+import com.enigma.kingkost.repositories.UserCredentialRepository;
 import com.enigma.kingkost.services.*;
 import com.enigma.kingkost.services.FileStorageService;
 import jakarta.persistence.criteria.Join;
@@ -49,6 +50,7 @@ public class KostServiceImpl implements KostService {
     private final SellerService sellerService;
     private final GenderService genderService;
     private final TransactionKostRepository transactionKostService;
+    private final UserCredentialRepository user;
 
     @Transactional(rollbackOn = Exception.class)
     @Override
@@ -221,7 +223,6 @@ public class KostServiceImpl implements KostService {
                 if (kostPrice.isEmpty()) {
                     continue;
                 }
-
                 List<ImageResponse> imageList = imageKostService.getImageByKostId(kost.getId());
                 kostResponses.add(KostResponse.builder()
                         .id(kost.getId())
@@ -236,6 +237,7 @@ public class KostServiceImpl implements KostService {
                         .seller(SellerResponse.builder()
                                 .id(kost.getSeller().getId())
                                 .fullName(kost.getSeller().getFullName())
+                                .username(kost.getSeller().getUserCredential().getUsername())
                                 .address(kost.getSeller().getAddress())
                                 .email(kost.getSeller().getEmail())
                                 .phoneNumber(kost.getSeller().getPhoneNumber())
