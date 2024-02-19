@@ -124,6 +124,7 @@ public class SellerServiceImpl implements SellerService {
                 .id(findSeller.getId())
                 .address(findSeller.getAddress())
                 .email(findSeller.getEmail())
+                .username(findSeller.getUserCredential().getUsername())
                 .phoneNumber(findSeller.getPhoneNumber())
                 .genderTypeId(findSeller.getGenderTypeId())
                 .url(findSeller.getUrl())
@@ -146,6 +147,7 @@ public class SellerServiceImpl implements SellerService {
                 .profileImageType(seller.getProfileImageType())
                 .url(seller.getUrl())
                 .active(seller.isActive())
+                .username(seller.getUserCredential().getUsername())
                 .build();
     }
 
@@ -160,6 +162,7 @@ public class SellerServiceImpl implements SellerService {
                 .profileImageType(seller.getProfileImageType())
                 .profileImageName(seller.getProfileImageName())
                 .url(seller.getUrl())
+                .username(seller.getUserCredential().getUsername())
                 .active(seller.isActive())
                 .build();
     }

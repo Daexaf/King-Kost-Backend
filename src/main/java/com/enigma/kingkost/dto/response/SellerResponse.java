@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class SellerResponse {
     private String id;
     private String fullName;
+    private String username;
     private String email;
     private GenderType genderTypeId;
     private String phoneNumber;
