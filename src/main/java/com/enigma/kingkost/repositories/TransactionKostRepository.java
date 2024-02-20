@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface TransactionKostRepository extends JpaRepository<TransactionKost, String>, JpaSpecificationExecutor<TransactionKost> {
     TransactionKost getByKostIdAndCustomerIdAndAprStatusEquals(String kostId, String customerId, Integer status);
+    TransactionKost getByKostIdAndAprStatusEquals(String kostId, Integer status);
 }

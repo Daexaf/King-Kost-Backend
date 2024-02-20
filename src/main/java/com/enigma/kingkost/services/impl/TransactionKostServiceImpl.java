@@ -12,6 +12,7 @@ import com.enigma.kingkost.mapper.KostMapper;
 import com.enigma.kingkost.repositories.TransactionKostRepository;
 import com.enigma.kingkost.services.*;
 import com.enigma.kingkost.util.DateFormat;
+import com.google.api.gax.rpc.AlreadyExistsException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
@@ -47,6 +48,10 @@ public class TransactionKostServiceImpl implements TransactionKostService {
         if (findKost.getAvailableRoom() == 0) {
             throw new NullPointerException("Boarding rooms are not available");
         }
+        TransactionKost checkTransactionKost = transactionKostRepository.getByKostIdAndAprStatusEquals(findKost.getId(), 0);
+        if (checkTransactionKost != null) {
+            throw new NullPointerException("Cannot booking kost because the previus transactions is still pending");
+        }
         kostService.ReduceItAvailableRoom(findKost);
         CustomerResponse findCustomer = customerService.getById(transactionKostRequest.getCustomerId());
         KostPrice findKostPrice = kostPriceService.getByKostId(findKost.getId());
@@ -54,61 +59,13 @@ public class TransactionKostServiceImpl implements TransactionKostService {
         PaymentType paymentType = paymentService.getById(transactionKostRequest.getPaymentTypeId());
         List<Image> images = imageKostService.getByKostId(findKost.getId());
 
-        TransactionKost saveTransactionKost = transactionKostRepository.save(TransactionKost.builder()
-                .kost(Kost.builder()
-                        .id(findKost.getId())
-                        .build())
-                .customer(Customer.builder()
-                        .id(findCustomer.getId())
-                        .address(findCustomer.getAddress())
-                        .fullName(findCustomer.getFullName())
-                        .email(findCustomer.getEmail())
-                        .genderTypeId(findCustomer.getGenderTypeId())
-                        .phoneNumber(findCustomer.getPhoneNumber())
-                        .build())
-                .monthType(monthType)
-                .paymentType(paymentType)
-                .aprStatus(0)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build());
+        TransactionKost saveTransactionKost = transactionKostRepository.save(TransactionKost.builder().kost(Kost.builder().id(findKost.getId()).build()).customer(Customer.builder().id(findCustomer.getId()).address(findCustomer.getAddress()).fullName(findCustomer.getFullName()).email(findCustomer.getEmail()).genderTypeId(findCustomer.getGenderTypeId()).phoneNumber(findCustomer.getPhoneNumber()).build()).monthType(monthType).paymentType(paymentType).aprStatus(0).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now()).build());
 
 
-        emailService.sendHtmlEmailForSeller(EmailRequestSeller.builder()
-                .emailTo(findKost.getSeller().getEmail())
-                .subject("King Kost Booking Notification")
-                .kostName(findKost.getName())
-                .sellerName(findKost.getSeller().getFullName())
-                .customerName(findCustomer.getFullName())
-                .customerEmail(findCustomer.getEmail())
-                .phoneCustomer(findCustomer.getPhoneNumber())
-                .bookingDate(DateFormat.dateStringFormat(saveTransactionKost.getCreatedAt()))
-                .updateBookingDate(DateFormat.dateStringFormat(saveTransactionKost.getCreatedAt()))
-                .statusBooking(String.valueOf(EStatus.values()[saveTransactionKost.getAprStatus()]))
-                .build());
-        emailService.sendHtmlEmailForCustomer(EmailRequestCustomer.builder()
-                .emailTo(saveTransactionKost.getCustomer().getEmail())
-                .subject("King Kost Booking Notification")
-                .customerName(saveTransactionKost.getCustomer().getFullName())
-                .kostName(findKost.getName())
-                .sellerName(findKost.getSeller().getFullName())
-                .emailSeller(findKost.getSeller().getEmail())
-                .noPhoneSeller(findKost.getSeller().getPhoneNumber())
-                .bookingDate(DateFormat.dateStringFormatNow())
-                .updateBookingDate(DateFormat.dateStringFormat(saveTransactionKost.getCreatedAt()))
-                .statusBooking(String.valueOf(EStatus.values()[saveTransactionKost.getAprStatus()]))
-                .build());
+        emailService.sendHtmlEmailForSeller(EmailRequestSeller.builder().emailTo(findKost.getSeller().getEmail()).subject("King Kost Booking Notification").kostName(findKost.getName()).sellerName(findKost.getSeller().getFullName()).customerName(findCustomer.getFullName()).customerEmail(findCustomer.getEmail()).phoneCustomer(findCustomer.getPhoneNumber()).bookingDate(DateFormat.dateStringFormat(saveTransactionKost.getCreatedAt())).updateBookingDate(DateFormat.dateStringFormat(saveTransactionKost.getCreatedAt())).statusBooking(String.valueOf(EStatus.values()[saveTransactionKost.getAprStatus()])).build());
+        emailService.sendHtmlEmailForCustomer(EmailRequestCustomer.builder().emailTo(saveTransactionKost.getCustomer().getEmail()).subject("King Kost Booking Notification").customerName(saveTransactionKost.getCustomer().getFullName()).kostName(findKost.getName()).sellerName(findKost.getSeller().getFullName()).emailSeller(findKost.getSeller().getEmail()).noPhoneSeller(findKost.getSeller().getPhoneNumber()).bookingDate(DateFormat.dateStringFormatNow()).updateBookingDate(DateFormat.dateStringFormat(saveTransactionKost.getCreatedAt())).statusBooking(String.valueOf(EStatus.values()[saveTransactionKost.getAprStatus()])).build());
 
-        return TransactionKostResponse.builder()
-                .id(saveTransactionKost.getId())
-                .kost(KostMapper.kostToKostResponse(findKost, findKostPrice, images, saveTransactionKost.getAprStatus()))
-                .customer(findCustomer)
-                .paymentType(saveTransactionKost.getPaymentType())
-                .aprStatus(saveTransactionKost.getAprStatus())
-                .monthType(saveTransactionKost.getMonthType())
-                .createdAt(saveTransactionKost.getCreatedAt())
-                .updatedAt(saveTransactionKost.getUpdatedAt())
-                .build();
+        return TransactionKostResponse.builder().id(saveTransactionKost.getId()).kost(KostMapper.kostToKostResponse(findKost, findKostPrice, images, saveTransactionKost.getAprStatus())).customer(findCustomer).paymentType(saveTransactionKost.getPaymentType()).aprStatus(saveTransactionKost.getAprStatus()).monthType(saveTransactionKost.getMonthType()).createdAt(saveTransactionKost.getCreatedAt()).updatedAt(saveTransactionKost.getUpdatedAt()).build();
     }
 
     @Override
@@ -139,16 +96,7 @@ public class TransactionKostServiceImpl implements TransactionKostService {
             CustomerResponse customerResponse = customerService.getById(transactionKost.getCustomer().getId());
             KostPrice kostPrice = kostPriceService.getByKostId(transactionKost.getKost().getId());
             List<Image> images = imageKostService.getByKostId(transactionKost.getKost().getId());
-            transactionKostListResponse.add(TransactionKostResponse.builder()
-                    .id(transactionKost.getId())
-                    .kost(KostMapper.kostToKostResponse(transactionKost.getKost(), kostPrice, images, transactionKost.getAprStatus()))
-                    .customer(customerResponse)
-                    .monthType(transactionKost.getMonthType())
-                    .paymentType(transactionKost.getPaymentType())
-                    .aprStatus(transactionKost.getAprStatus())
-                    .createdAt(transactionKost.getCreatedAt())
-                    .updatedAt(transactionKost.getUpdatedAt())
-                    .build());
+            transactionKostListResponse.add(TransactionKostResponse.builder().id(transactionKost.getId()).kost(KostMapper.kostToKostResponse(transactionKost.getKost(), kostPrice, images, transactionKost.getAprStatus())).customer(customerResponse).monthType(transactionKost.getMonthType()).paymentType(transactionKost.getPaymentType()).aprStatus(transactionKost.getAprStatus()).createdAt(transactionKost.getCreatedAt()).updatedAt(transactionKost.getUpdatedAt()).build());
         }
         return new PageImpl<>(transactionKostListResponse, pageable, transactionKosts.getTotalElements());
     }
@@ -183,48 +131,10 @@ public class TransactionKostServiceImpl implements TransactionKostService {
         if (findTransaction.getAprStatus() > 0) {
             throw new NullPointerException("Transaction was changges");
         }
-        TransactionKost transactionKost = transactionKostRepository.save(TransactionKost.builder()
-                .id(findTransaction.getId())
-                .kost(findTransaction.getKost())
-                .customer(Customer.builder()
-                        .id(findCustomer.getId())
-                        .fullName(findCustomer.getFullName())
-                        .email(findCustomer.getEmail())
-                        .genderTypeId(findCustomer.getGenderTypeId())
-                        .phoneNumber(findCustomer.getPhoneNumber())
-                        .address(findCustomer.getAddress())
-                        .build())
-                .monthType(findTransaction.getMonthType())
-                .paymentType(findTransaction.getPaymentType())
-                .aprStatus(1)
-                .createdAt(findTransaction.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
-                .build());
+        TransactionKost transactionKost = transactionKostRepository.save(TransactionKost.builder().id(findTransaction.getId()).kost(findTransaction.getKost()).customer(Customer.builder().id(findCustomer.getId()).fullName(findCustomer.getFullName()).email(findCustomer.getEmail()).genderTypeId(findCustomer.getGenderTypeId()).phoneNumber(findCustomer.getPhoneNumber()).address(findCustomer.getAddress()).build()).monthType(findTransaction.getMonthType()).paymentType(findTransaction.getPaymentType()).aprStatus(1).createdAt(findTransaction.getCreatedAt()).updatedAt(LocalDateTime.now()).build());
 
-        emailService.sendHtmlEmailForSeller(EmailRequestSeller.builder()
-                .emailTo(transactionKost.getKost().getSeller().getEmail())
-                .subject("King Kost Booking Notification")
-                .kostName(transactionKost.getKost().getName())
-                .sellerName(transactionKost.getKost().getSeller().getFullName())
-                .customerName(findCustomer.getFullName())
-                .customerEmail(findCustomer.getEmail())
-                .phoneCustomer(findCustomer.getPhoneNumber())
-                .bookingDate(DateFormat.dateStringFormat(transactionKost.getCreatedAt()))
-                .updateBookingDate(DateFormat.dateStringFormat(transactionKost.getUpdatedAt()))
-                .statusBooking(String.valueOf(EStatus.values()[transactionKost.getAprStatus()]))
-                .build());
-        emailService.sendHtmlEmailForCustomer(EmailRequestCustomer.builder()
-                .emailTo(transactionKost.getCustomer().getEmail())
-                .subject("King Kost Booking Notification")
-                .customerName(transactionKost.getCustomer().getFullName())
-                .kostName(transactionKost.getKost().getName())
-                .sellerName(transactionKost.getKost().getSeller().getFullName())
-                .emailSeller(transactionKost.getKost().getSeller().getEmail())
-                .noPhoneSeller(transactionKost.getKost().getSeller().getPhoneNumber())
-                .bookingDate(DateFormat.dateStringFormatNow())
-                .updateBookingDate(DateFormat.dateStringFormat(transactionKost.getUpdatedAt()))
-                .statusBooking(String.valueOf(EStatus.values()[transactionKost.getAprStatus()]))
-                .build());
+        emailService.sendHtmlEmailForSeller(EmailRequestSeller.builder().emailTo(transactionKost.getKost().getSeller().getEmail()).subject("King Kost Booking Notification").kostName(transactionKost.getKost().getName()).sellerName(transactionKost.getKost().getSeller().getFullName()).customerName(findCustomer.getFullName()).customerEmail(findCustomer.getEmail()).phoneCustomer(findCustomer.getPhoneNumber()).bookingDate(DateFormat.dateStringFormat(transactionKost.getCreatedAt())).updateBookingDate(DateFormat.dateStringFormat(transactionKost.getUpdatedAt())).statusBooking(String.valueOf(EStatus.values()[transactionKost.getAprStatus()])).build());
+        emailService.sendHtmlEmailForCustomer(EmailRequestCustomer.builder().emailTo(transactionKost.getCustomer().getEmail()).subject("King Kost Booking Notification").customerName(transactionKost.getCustomer().getFullName()).kostName(transactionKost.getKost().getName()).sellerName(transactionKost.getKost().getSeller().getFullName()).emailSeller(transactionKost.getKost().getSeller().getEmail()).noPhoneSeller(transactionKost.getKost().getSeller().getPhoneNumber()).bookingDate(DateFormat.dateStringFormatNow()).updateBookingDate(DateFormat.dateStringFormat(transactionKost.getUpdatedAt())).statusBooking(String.valueOf(EStatus.values()[transactionKost.getAprStatus()])).build());
     }
 
 }

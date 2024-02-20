@@ -247,6 +247,8 @@ public class KostServiceImpl implements KostService {
                         .city(CityMapper.cityToCityResponse(kost.getCity()))
                         .currentBookingStatus(4)
                         .subdistrict(SubdistrictMapper.subdistrictToSubdistrictResponse(kost.getSubdistrict()))
+                        .createdAt(kost.getCreatedAt())
+                        .updatedAt(kost.getUpdatedAt())
                         .build());
             }
 
