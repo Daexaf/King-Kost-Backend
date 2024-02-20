@@ -11,7 +11,9 @@ public interface TransactionKostService {
 
     Page<TransactionKostResponse> getAllTransaction(GetAllTransactionRequest getAllTransactionRequest);
 
-    TransactionKost getById(String id);
+    TransactionKostResponse getById(String id);
+
+    TransactionKost getByIdTransaction(String id);
 
     TransactionKost update(TransactionKost transactionKost);
 

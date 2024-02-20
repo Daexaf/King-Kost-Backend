@@ -19,8 +19,8 @@ public class ApprovalServiceImpl implements ApprovalService {
     private final EmailService emailService;
 
     @Override
-        public void approveTransactionKost(String transactionId, Integer approve, String sellerId) {
-        TransactionKost findTransactionKost = transactionKostService.getById(transactionId);
+    public void approveTransactionKost(String transactionId, Integer approve, String sellerId) {
+        TransactionKost findTransactionKost = transactionKostService.getByIdTransaction(transactionId);
         if (findTransactionKost.getAprStatus() > 0) {
             throw new NullPointerException("Transaction was approv");
         }

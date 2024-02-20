@@ -12,7 +12,6 @@ import com.enigma.kingkost.mapper.KostMapper;
 import com.enigma.kingkost.repositories.TransactionKostRepository;
 import com.enigma.kingkost.services.*;
 import com.enigma.kingkost.util.DateFormat;
-import com.google.api.gax.rpc.AlreadyExistsException;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
@@ -102,7 +101,21 @@ public class TransactionKostServiceImpl implements TransactionKostService {
     }
 
     @Override
-    public TransactionKost getById(String id) {
+    public TransactionKostResponse getById(String id) {
+        TransactionKost transactionKost = transactionKostRepository.findById(id).orElse(null);
+        if (transactionKost == null) {
+            throw new NullPointerException("Transaction not found");
+        }
+        KostPrice kostPrice = kostPriceService.getByKostId(transactionKost.getKost().getId());
+        List<Image> imageResponseList = imageKostService.getByKostId(transactionKost.getKost().getId());
+        return TransactionKostResponse.builder()
+                .id(transactionKost.getId())
+                .kost(KostMapper.kostToKostResponse(transactionKost.getKost(), kostPrice, imageResponseList, 4))
+                .build();
+    }
+
+    @Override
+    public TransactionKost getByIdTransaction(String id) {
         TransactionKost transactionKost = transactionKostRepository.findById(id).orElse(null);
         if (transactionKost == null) {
             throw new NullPointerException("Transaction not found");
@@ -122,7 +135,7 @@ public class TransactionKostServiceImpl implements TransactionKostService {
 
     @Override
     public void cancelTransactionKost(String customerId, String transactionId) {
-        TransactionKost findTransaction = getById(transactionId);
+        TransactionKost findTransaction = getByIdTransaction(transactionId);
         CustomerResponse findCustomer = customerService.getById(customerId);
         kostService.addAvailableRoom(findTransaction.getKost());
         if (!findTransaction.getCustomer().getId().equals(findCustomer.getId())) {

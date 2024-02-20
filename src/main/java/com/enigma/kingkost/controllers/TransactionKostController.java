@@ -57,7 +57,7 @@ public class TransactionKostController {
 
     @GetMapping(AppPath.VALUE_ID)
     public ResponseEntity<CommondResponse> getTransasctionById(@PathVariable String id) {
-        TransactionKost transactionKost = transactionKostService.getById(id);
+        TransactionKostResponse transactionKost = transactionKostService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(CommondResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Success get transaction")
