@@ -108,10 +108,17 @@ public class TransactionKostServiceImpl implements TransactionKostService {
         }
         KostPrice kostPrice = kostPriceService.getByKostId(transactionKost.getKost().getId());
         List<Image> imageResponseList = imageKostService.getByKostId(transactionKost.getKost().getId());
-        return TransactionKostResponse.builder()
-                .id(transactionKost.getId())
-                .kost(KostMapper.kostToKostResponse(transactionKost.getKost(), kostPrice, imageResponseList, 4))
-                .build();
+        return TransactionKostResponse.builder().id(transactionKost.getId())
+                .kost(KostMapper.kostToKostResponse(transactionKost.getKost(), kostPrice, imageResponseList, 4)).monthType(transactionKost.getMonthType())
+                .customer(CustomerResponse.builder().id(transactionKost.getCustomer().getId())
+                        .address(transactionKost.getCustomer().getAddress()).url(transactionKost.getCustomer().getUrl())
+                        .profileImageType(transactionKost.getCustomer().getProfileImageType()).profileImageName(transactionKost.getCustomer().getProfileImageName())
+                        .phoneNumber(transactionKost.getCustomer().getPhoneNumber())
+                        .email(transactionKost.getCustomer().getEmail()).genderTypeId(transactionKost.getCustomer().getGenderTypeId())
+                        .fullName(transactionKost.getCustomer().getFullName()).active(transactionKost.getCustomer().isActive())
+                        .build()).paymentType(transactionKost.getPaymentType())
+                .aprStatus(transactionKost.getAprStatus()).updatedAt(transactionKost.getUpdatedAt())
+                .createdAt(transactionKost.getCreatedAt()).build();
     }
 
     @Override
