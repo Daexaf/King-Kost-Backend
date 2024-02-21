@@ -1,12 +1,40 @@
-#version: '3.1'
-#
-#services:
-#  db:
-#    image: postgres
-#    restart: always
-#    ports:
-#      - "5432:5432"
-#    environment:
-#      POSTGRES_USERNAME: postgres
-#      POSTGRES_PASSWORD: sasuke123
-#      POSTGRES_DB: db_king_kost
+version: '3'
+services:
+
+  postgresql:
+    image: postgres
+    container_name: postgresql
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=db_king_kost
+    ports:
+      - "5432:5432"
+    volumes:
+      - "postgresql-data:/var/lib/postgresql/data"
+    networks:
+      - king-kost-network
+
+  king-kost-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: king-kost-app
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=postgresql
+      - DB_PORT=5432
+      - SERVER_PORT=8080
+      - DB_NAME=db_king_kost
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+    depends_on:
+      - postgresql
+    networks:
+      - king-kost-network
+
+volumes:
+  postgresql-data:
+networks:
+  king-kost-network:
+    driver: bridge
